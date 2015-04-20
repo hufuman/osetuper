@@ -13,11 +13,11 @@
 #endif
 
 
+#include "Util.h"
 #include "resource.h"
 #include "WndLayout.h"
 #include "LinkStatic.h"
 #include "BaseDlg.h"
-#include "AboutDlg.h"
 #include "MainDlg.h"
 
 
@@ -58,6 +58,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 #else
     ::InitCommonControls();
 #endif
+
+    Util::InitGdiplus();
 
     _Module.Init(NULL, hInstance);
 

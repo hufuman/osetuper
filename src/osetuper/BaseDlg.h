@@ -9,6 +9,10 @@ public:
     {
         m_strAppName.LoadString(IDS_APP_NAME);
     }
+    ~BaseDlg()
+    {
+        ;
+    }
 
     int MsgBox(LPCTSTR szText, DWORD dwFlags)
     {

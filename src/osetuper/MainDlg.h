@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "OControlManager.h"
+
 
 class CMainDlg : public BaseDlg<CMainDlg>, public CMessageFilter
 {
@@ -16,6 +18,11 @@ public:
 	{
     }
 
+    ~CMainDlg()
+    {
+        m_hWnd = NULL;
+    }
+
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
 		return ::IsDialogMessage(m_hWnd, pMsg);
@@ -23,11 +30,76 @@ public:
 
 	BEGIN_MSG_MAP(CMainDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-        MESSAGE_HANDLER(WM_SYSCOMMAND, OnSysCommand)
-        MESSAGE_HANDLER(WM_CLOSE, OnClose)
+        MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+        MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
+        MESSAGE_HANDLER(WM_NCACTIVATE, OnNcActivate)
+        MESSAGE_HANDLER(WM_NCPAINT, OnNcPaint)
+        MESSAGE_HANDLER(WM_NCCALCSIZE, OnNcCalcSize)
+        MESSAGE_HANDLER(WM_PAINT, OnPaint)
+
+        COMMAND_ID_HANDLER(IDC_BTN_SYS_MIN, OnBtnSysMin)
+        COMMAND_ID_HANDLER(IDC_BTN_SYS_CLOSE, OnBtnSysClose)
+
+        if(uMsg == 0xAE // WM_NCUAHDRAWCAPTION
+            || uMsg == 0xAF) // WM_NCUAHDRAWFRAME
+        {
+            bHandled = TRUE;
+            lResult = 0;
+            return TRUE;
+        }
+
+        if(m_ControlManager.HandleMsg(uMsg, wParam, lParam, lResult))
+        {
+            return TRUE;
+        }
 
         REFLECT_NOTIFICATIONS()
-	END_MSG_MAP()
+    END_MSG_MAP()
+
+    LRESULT OnBtnSysMin(UINT /*uCode*/, UINT /*uCommandId*/, HWND /*hWndControl*/, BOOL& /*bHandled*/)
+    {
+        ::ShowWindow(m_hWnd, SW_MINIMIZE);
+        return 0;
+    }
+
+    LRESULT OnBtnSysClose(UINT /*uCode*/, UINT /*uCommandId*/, HWND /*hWndControl*/, BOOL& /*bHandled*/)
+    {
+        ::DestroyWindow(m_hWnd);
+        return 0;
+    }
+
+    LRESULT OnNcActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+    {
+        bHandled = !::IsIconic(m_hWnd);
+        return (wParam == 0) ? TRUE : FALSE;
+    }
+
+    LRESULT OnEraseBkgnd(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+    {
+        return 1;
+    }
+
+    LRESULT OnNcCalcSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+    {
+        return 0;
+    }
+
+    LRESULT OnNcPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+    {
+        return 0;
+    }
+
+    LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+    {
+        PAINTSTRUCT ps;
+        ::BeginPaint(m_hWnd, &ps);
+
+        ::FillRect(ps.hdc, &ps.rcPaint, (HBRUSH)::GetStockObject(BLACK_BRUSH));
+        m_ControlManager.Draw(ps.hdc, ps.rcPaint);
+
+        ::EndPaint(m_hWnd, &ps);
+        return 0;
+    }
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
@@ -42,24 +114,6 @@ public:
 			IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
 		SetIcon(hIconSmall, FALSE);
 
-		// Add "About..." menu item to system menu.
-
-		// IDM_ABOUTBOX must be in the system command range.
-		_ASSERTE((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
-		_ASSERTE(IDM_ABOUTBOX < 0xF000);
-
-		CMenu SysMenu = GetSystemMenu(FALSE);
-		if(::IsMenu(SysMenu))
-		{
-			TCHAR szAboutMenu[256];
-			if(::LoadString(_Module.GetResourceInstance(), IDS_ABOUTBOX, szAboutMenu, 255) > 0)
-			{
-				SysMenu.AppendMenu(MF_SEPARATOR);
-				SysMenu.AppendMenu(MF_STRING, IDM_ABOUTBOX, szAboutMenu);
-			}
-		}
-		SysMenu.Detach();
-
 		// register object for message filtering
 		CMessageLoop* pLoop = _Module.GetMessageLoop();
 		pLoop->AddMessageFilter(this);
@@ -67,46 +121,34 @@ public:
         m_strAppName.LoadString(IDS_APP_NAME);
 
         InitLayout();
+
+        CenterWindow();
+
 		return TRUE;
     }
 
-    LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+    LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
     {
         ::PostQuitMessage(0);
-        return 0;
-    }
-
-    LRESULT OnHelpAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-    {
-        CAboutDlg dlg;
-        dlg.DoModal();
-        return 0;
-    }
-
-    LRESULT OnSysCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
-    {
-        UINT uCmdType = (UINT)wParam;
-
-        if((uCmdType & 0xFFF0) == IDM_ABOUTBOX)
-        {
-            CAboutDlg dlg;
-            dlg.DoModal();
-        }
-        else
-        {
-            bHandled = FALSE;
-        }
-
+        bHandled = FALSE;
         return 0;
     }
 
     // Layout
     void InitLayout()
     {
-        m_WndLayout.Init(m_hWnd);
+        m_ControlManager.Init(m_hWnd);
+
+        CRect rcTemp;
+        OButton* pBtnClose = m_ControlManager.CreateButton(_T("sysclosebutton"), IDC_BTN_SYS_CLOSE, ManagerLayout::Top | ManagerLayout::Right, 4);
+        rcTemp = pBtnClose->GetRect();
+        rcTemp.top = 0;
+        rcTemp.right = rcTemp.Width();
+        m_ControlManager.CreateButton(_T("sysminbutton"), IDC_BTN_SYS_MIN, ManagerLayout::Top | ManagerLayout::Right, 3, rcTemp);
     }
 
 private:
-    CWndLayout      m_WndLayout;
     CString         m_strAppName;
+
+    OControlManager m_ControlManager;
 };

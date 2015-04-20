@@ -24,7 +24,13 @@
 #include <atlfile.h>
 #include <atlcoll.h>
 #include <atlwin.h>
+#include <atltypes.h>
 
+#include <vector>
+
+
+#include <GdiPlus.h>
+#pragma comment(lib, "gdiplus.lib")
 
 #include "..\WTL80\include\atlapp.h"
 #include "..\WTL80\include\atlctrls.h"

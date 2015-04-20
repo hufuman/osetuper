@@ -199,7 +199,11 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\WndLayout.cpp"
+				RelativePath=".\Util.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\XStreamImpl.cpp"
 				>
 			</File>
 		</Filter>
@@ -208,10 +212,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\AboutDlg.h"
-				>
-			</File>
 			<File
 				RelativePath=".\BaseDlg.h"
 				>
@@ -237,7 +237,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\WndLayout.h"
+				RelativePath=".\Util.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XStreamImpl.h"
 				>
 			</File>
 		</Filter>
@@ -252,6 +256,34 @@
 			</File>
 			<File
 				RelativePath=".\osetuper.rc"
+				>
+			</File>
+			<File
+				RelativePath=".\resource\sysclosebutton.png"
+				>
+			</File>
+			<File
+				RelativePath=".\resource\sysminbutton.png"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="OControl"
+			>
+			<File
+				RelativePath=".\OControl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OControl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OControlManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OControlManager.h"
 				>
 			</File>
 		</Filter>
