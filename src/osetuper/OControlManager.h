@@ -7,10 +7,12 @@ class ManagerLayout
 public:
     enum
     {
-        Top     = 0x01,
-        Left    = 0x02,
-        Right   = 0x04,
-        Bottom  = 0x08,
+        Top     = 0x001,
+        Left    = 0x002,
+        Right   = 0x004,
+        Bottom  = 0x008,
+        HFill   = 0x010,
+        VFill   = 0x020,
     };
 };
 
@@ -27,12 +29,15 @@ public:
 
     HWND GetWindow() const;
 
-    OButton* CreateButton(LPCTSTR szResName, UINT uButtonCommandId, UINT uLayout, int nImageCount);
-    OButton* CreateButton(LPCTSTR szResName, UINT uButtonCommandId, UINT uLayout, int nImageCount, const CRect& rcMargin);
+    OButton*    CreateButton(LPCTSTR szResName, UINT uButtonCommandId, UINT uLayout, int nImageCount, const CRect& rcMargin);
+
+    OShape*     CreateShape(COLORREF color, UINT uLayout, const CRect& rcMargin);
+    OEdit*      CreateEdit(LPCTSTR szText, UINT uLayout, const CRect& rcMargin);
+    OLink*      CreateLink(LPCTSTR szText, UINT uLayout, const CRect& rcMargin);
+    OCheckBox*  CreateCheckBox(LPCTSTR szResName, UINT uButtonCommandId, UINT uLayout, const CRect& rcMargin);
 
 public:
     void Invalidate(const CRect& rect) const;
-    void GetControlRect(int nWidth, int nHeight, OControl* control, CRect& rcControl) const;
     void RelayoutControls(int nWidth, int nHeight) const;
     OControl* GetControlByPt(const CPoint& pt) const;
 

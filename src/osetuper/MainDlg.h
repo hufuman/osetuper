@@ -94,7 +94,6 @@ public:
         PAINTSTRUCT ps;
         ::BeginPaint(m_hWnd, &ps);
 
-        ::FillRect(ps.hdc, &ps.rcPaint, (HBRUSH)::GetStockObject(BLACK_BRUSH));
         m_ControlManager.Draw(ps.hdc, ps.rcPaint);
 
         ::EndPaint(m_hWnd, &ps);
@@ -139,12 +138,26 @@ public:
     {
         m_ControlManager.Init(m_hWnd);
 
-        CRect rcTemp;
-        OButton* pBtnClose = m_ControlManager.CreateButton(_T("sysclosebutton"), IDC_BTN_SYS_CLOSE, ManagerLayout::Top | ManagerLayout::Right, 4);
+        CRect rcTemp(0, 0, 0, 0);
+
+        OShape* pShape = m_ControlManager.CreateShape(RGB(255, 255, 0), ManagerLayout::VFill | ManagerLayout::HFill, rcTemp);
+        pShape = pShape;
+
+        OButton* pBtnClose = m_ControlManager.CreateButton(_T("sysclosebutton"), IDC_BTN_SYS_CLOSE, ManagerLayout::Top | ManagerLayout::Right, 4, rcTemp);
         rcTemp = pBtnClose->GetRect();
         rcTemp.top = 0;
         rcTemp.right = rcTemp.Width();
         m_ControlManager.CreateButton(_T("sysminbutton"), IDC_BTN_SYS_MIN, ManagerLayout::Top | ManagerLayout::Right, 3, rcTemp);
+
+        rcTemp.SetRect(0, 0, 0, 0);
+        OCheckBox* pChkBox = m_ControlManager.CreateCheckBox(_T("checkbutton"), 0, ManagerLayout::Bottom | ManagerLayout::Left, rcTemp);
+        pChkBox->SetText(_T("asdfadsfdsaf"));
+
+        rcTemp.SetRect(20, 20, 20, 20);
+        m_ControlManager.CreateEdit(_T("E:\\Test\\Text"), ManagerLayout::Bottom | ManagerLayout::HFill, rcTemp);
+
+        rcTemp.SetRect(20, 20, 20, 20);
+        m_ControlManager.CreateLink(_T("E:\\Test\\Text"), ManagerLayout::Top | ManagerLayout::HFill, rcTemp);
     }
 
 private:

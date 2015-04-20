@@ -54,7 +54,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-IDD_DIALOG_MAIN DIALOGEX 0, 0, 350, 141
+IDD_DIALOG_MAIN DIALOGEX 0, 0, 396, 217
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_POPUP | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
 CAPTION "osetuper"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -108,7 +108,25 @@ END
 //
 
 SYSCLOSEBUTTON          PNG                     "resource\\sysclosebutton.png"
-sysminbutton            PNG                     "resource\\sysminbutton.png"
+SYSMINBUTTON            PNG                     "resource\\sysminbutton.png"
+checkbutton             PNG                     "resource\\checkbutton.png"
+pushbutton              PNG                     "resource\\pushbutton.png"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_DIALOG_MAIN, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 216
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 

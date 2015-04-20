@@ -251,11 +251,19 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
+				RelativePath=".\resource\checkbutton.png"
+				>
+			</File>
+			<File
 				RelativePath=".\osetuper.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\osetuper.rc"
+				>
+			</File>
+			<File
+				RelativePath=".\resource\pushbutton.png"
 				>
 			</File>
 			<File

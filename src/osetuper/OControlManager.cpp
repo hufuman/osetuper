@@ -11,7 +11,13 @@ OControlManager::OControlManager()
 
 OControlManager::~OControlManager()
 {
-    ;
+    OControlVector::iterator ite = m_vctControls.begin();
+    for(; ite != m_vctControls.end(); ++ ite)
+    {
+        OControl* control = *ite;
+        delete control;
+    }
+    m_vctControls.clear();
 }
 
 void OControlManager::Init(HWND hWnd)
@@ -101,12 +107,44 @@ BOOL OControlManager::HandleMsg(UINT message, WPARAM wParam, LPARAM lParam, LRES
             lResult = (m_pHoverControl == NULL) ? HTCAPTION : HTCLIENT;
             break;
         }
+    case WM_SETCURSOR:
+        {
+            if(m_pHoverControl == NULL)
+            {
+                bResult = FALSE;
+            }
+            else
+            {
+                HCURSOR hCursor = m_pHoverControl->GetCursor();
+                if(hCursor != NULL)
+                {
+                    bResult = TRUE;
+                    lResult = TRUE;
+                    ::SetCursor(hCursor);
+                }
+            }
+            break;
+        }
     }
     return bResult;
 }
 
 void OControlManager::Draw(HDC hDc, const CRect& rcClip)
 {
+    CRect rcClient;
+    ::GetClientRect(m_hWnd, &rcClient);
+
+    HDC hMemDc = ::CreateCompatibleDC(hDc);
+    HBITMAP hMemBitmap = ::CreateCompatibleBitmap(hDc, rcClient.Width(), rcClient.Height());
+    HGDIOBJ hOldBmp = ::SelectObject(hMemDc, hMemBitmap);
+    ::SetBkMode(hMemDc, TRANSPARENT);
+    ::SetTextColor(hMemDc, RGB(255, 255, 255));
+
+    HRGN hClipRgn = (HRGN)::GetCurrentObject(hDc, OBJ_REGION);
+    HFONT hFont = (HFONT)::SendMessage(m_hWnd, WM_GETFONT, 0, 0);
+    ::SelectClipRgn(hMemDc, hClipRgn);
+    HGDIOBJ hOldFont = ::SelectObject(hMemDc, hFont);
+
     CRect rcControl;
     OControlVector::const_iterator ite = m_vctControls.begin();
     for(; ite != m_vctControls.end(); ++ ite)
@@ -115,8 +153,18 @@ void OControlManager::Draw(HDC hDc, const CRect& rcClip)
         rcControl = control->GetRect();
         if(!Util::IsRectsOverlapped(&rcClip, &rcControl))
             continue;
-        control->Draw(hDc);
+        control->Draw(hMemDc);
     }
+
+    ::BitBlt(hDc, 0, 0, rcClient.Width(), rcClient.Height(), hMemDc, 0, 0, SRCCOPY);
+
+    ::SelectObject(hMemDc, hOldBmp);
+
+    ::SelectObject(hMemDc, NULL);
+    ::SelectObject(hMemDc, hOldFont);
+
+    ::DeleteObject(hMemBitmap);
+    ::DeleteDC(hMemDc);
 }
 
 HWND OControlManager::GetWindow() const
@@ -124,26 +172,56 @@ HWND OControlManager::GetWindow() const
     return m_hWnd;
 }
 
-OButton* OControlManager::CreateButton(LPCTSTR szResName, UINT uButtonCommandId, UINT uLayout, int nImageCount)
-{
-    CRect rcMargin;
-    rcMargin.SetRect(0, 0, 0, 0);
-    return CreateButton(szResName, uButtonCommandId, uLayout, nImageCount, rcMargin);
-}
-
 OButton* OControlManager::CreateButton(LPCTSTR szResName, UINT uButtonCommandId, UINT uLayout, int nImageCount, const CRect& rcMargin)
 {
-    OButton* control = new OButton;
-    control->Create(this, szResName, uButtonCommandId, uLayout, nImageCount, rcMargin);
-
-    CRect rcClient;
-    ::GetClientRect(m_hWnd, &rcClient);
-
-    CRect rcControl;
-    GetControlRect(rcClient.Width(), rcClient.Height(), control, rcControl);
-    control->SetRect(rcControl);
+    OButton* control = new OButton(this);
 
     m_vctControls.push_back(control);
+    control->Create(szResName, uButtonCommandId, uLayout, nImageCount, rcMargin);
+
+    return control;
+}
+
+OShape* OControlManager::CreateShape(COLORREF color, UINT uLayout, const CRect& rcMargin)
+{
+    OShape* control = new OShape(this);
+    m_vctControls.push_back(control);
+
+    control->Create(NULL, 0, uLayout, 0, rcMargin);
+    control->SetColor(color);
+
+    return control;
+}
+
+OEdit* OControlManager::CreateEdit(LPCTSTR szText, UINT uLayout, const CRect& rcMargin)
+{
+    OEdit* control = new OEdit(this);
+    m_vctControls.push_back(control);
+
+    control->Create(NULL, 0, uLayout, 0, rcMargin);
+    control->SetText(szText);
+
+    return control;
+}
+
+OLink* OControlManager::CreateLink(LPCTSTR szText, UINT uLayout, const CRect& rcMargin)
+{
+    OLink* control = new OLink(this);
+    m_vctControls.push_back(control);
+
+    control->Create(NULL, 0, uLayout, 0, rcMargin);
+    control->SetText(szText);
+
+    return control;
+}
+
+OCheckBox* OControlManager::CreateCheckBox(LPCTSTR szResName, UINT uButtonCommandId, UINT uLayout, const CRect& rcMargin)
+{
+    OCheckBox* control = new OCheckBox(this);
+    m_vctControls.push_back(control);
+
+    control->Create(szResName, uButtonCommandId, uLayout, 4, rcMargin);
+
     return control;
 }
 
@@ -152,45 +230,13 @@ void OControlManager::Invalidate(const CRect& rect) const
     ::InvalidateRect(m_hWnd, rect, FALSE);
 }
 
-void OControlManager::GetControlRect(int nWidth, int nHeight, OControl* control, CRect& rcControl) const
-{
-    UINT uLayout = control->GetLayout();
-    CRect rcMargin = control->GetMargin();
-
-    CSize size = control->GetAutoSize();
-    rcControl.SetRect(0, 0, size.cx, size.cy);
-    if(uLayout & ManagerLayout::Top)
-    {
-        rcControl.top = rcMargin.top;
-        rcControl.bottom = rcControl.top + size.cy;
-    }
-    else if(uLayout & ManagerLayout::Bottom)
-    {
-        rcControl.bottom = nHeight - rcMargin.bottom;
-        rcControl.top = rcControl.bottom - size.cy;
-    }
-
-    if(uLayout & ManagerLayout::Left)
-    {
-        rcControl.left = rcMargin.left;
-        rcControl.right = rcControl.left + size.cx;
-    }
-    else if(uLayout & ManagerLayout::Right)
-    {
-        rcControl.right = nWidth - rcMargin.right;
-        rcControl.left = rcControl.right - size.cx;
-    }
-}
-
 void OControlManager::RelayoutControls(int nWidth, int nHeight) const
 {
-    CRect rcControl;
     OControlVector::const_iterator ite = m_vctControls.begin();
     for(; ite != m_vctControls.end(); ++ ite)
     {
         OControl* control = *ite;
-        GetControlRect(nWidth, nHeight, control, rcControl);
-        control->SetRect(rcControl);
+        control->AutoSize(nWidth, nHeight);
     }
 }
 
@@ -201,6 +247,8 @@ OControl* OControlManager::GetControlByPt(const CPoint& pt) const
     for(; ite != m_vctControls.end(); ++ ite)
     {
         OControl* control = *ite;
+        if(!control->NeedHover())
+            continue;
         rcControl = control->GetRect();
         if(rcControl.PtInRect(pt))
             return control;
@@ -237,3 +285,4 @@ void OControlManager::UpdateCorner()
     HRGN hRgn = ::CreateRectRgn(0, 0, rcWnd.Width(), rcWnd.Height());
     ::SetWindowRgn(m_hWnd, hRgn, FALSE);
 }
+
