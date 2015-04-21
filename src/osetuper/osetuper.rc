@@ -109,8 +109,8 @@ END
 
 SYSCLOSEBUTTON          PNG                     "resource\\sysclosebutton.png"
 SYSMINBUTTON            PNG                     "resource\\sysminbutton.png"
-checkbutton             PNG                     "resource\\checkbutton.png"
-pushbutton              PNG                     "resource\\pushbutton.png"
+CHECKBUTTON             PNG                     "resource\\checkbutton.png"
+PUSHBUTTON              PNG                     "resource\\pushbutton.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -127,6 +127,13 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// BINARY
+//
+
+lang                    BINARY                  "resource\\Lang.txt"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 

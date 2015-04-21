@@ -35,6 +35,7 @@ public:
     void SetHover(BOOL bHover, const CPoint& pt);
     void SetDown(BOOL bDown, const CPoint& pt);
     void SetRect(const CRect& rect);
+    void SetTextColor(COLORREF clrText);
     virtual void SetText(LPCTSTR szText);
     virtual CString GetText() const;
 
@@ -66,6 +67,7 @@ protected:
 
     CString m_strText;
     HCURSOR m_hCursor;
+    COLORREF m_clrText;
 
     UINT    m_uCommandId;
     OControlManager* m_pManager;

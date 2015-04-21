@@ -2,6 +2,7 @@
 #include "Util.h"
 
 #include "XStreamImpl.h"
+#include "OExeResData.h"
 
 
 namespace Util
@@ -138,16 +139,14 @@ namespace Util
 
     HBITMAP LoadImageFromExeRes(LPCTSTR szResName)
     {
-        HMODULE hModule = ::GetModuleHandle(NULL);
-        HRSRC hrSrc = ::FindResource(hModule, szResName, _T("PNG"));
-        HGLOBAL hGlobal = ::LoadResource(hModule, hrSrc);
-        void* pData = ::LockResource(hGlobal);
-        DWORD dwResSize = ::SizeofResource(hModule, hrSrc);
+        OExeResData data;
+        if(!data.LoadData(szResName, _T("PNG")))
+            return NULL;
 
         HBITMAP hResult = NULL;
         IStream* pStream = new XStreamImpl;
         ULONG uWritten;
-        pStream->Write(pData, dwResSize, &uWritten);
+        pStream->Write(data.GetData(), data.GetSize(), &uWritten);
         Gdiplus::Bitmap* pBitmap = Gdiplus::Bitmap::FromStream(pStream);
         if(pBitmap != NULL && pBitmap->GetLastStatus() == Gdiplus::Ok)
         {

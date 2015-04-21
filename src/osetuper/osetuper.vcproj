@@ -179,6 +179,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OExeResData.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OIniData.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -225,6 +233,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OExeResData.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OIniData.h"
+				>
+			</File>
+			<File
 				RelativePath=".\resource.h"
 				>
 			</File>
@@ -252,6 +268,10 @@
 			>
 			<File
 				RelativePath=".\resource\checkbutton.png"
+				>
+			</File>
+			<File
+				RelativePath=".\resource\Lang.txt"
 				>
 			</File>
 			<File
@@ -292,6 +312,14 @@
 			</File>
 			<File
 				RelativePath=".\OControlManager.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Pages"
+			>
+			<File
+				RelativePath=".\WelcomePage.h"
 				>
 			</File>
 		</Filter>

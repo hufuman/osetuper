@@ -29,6 +29,25 @@ private:
     HGDIOBJ m_hOldObj;
 };
 
+class OTextColor
+{
+    OTextColor();
+    OTextColor(const OTextColor&);
+    OTextColor& operator = (const OTextColor&);
+public:
+    OTextColor(HDC hDc, COLORREF clrText)
+    {
+        m_clrOld = ::SetTextColor(hDc, clrText);
+    }
+    ~OTextColor()
+    {
+        ::SelectObject(m_hDc, m_clrOld);
+    }
+private:
+    HDC     m_hDc;
+    COLORREF m_clrOld;
+};
+
 OControl::OControl(OControlManager* manager)
 {
     m_hImage = NULL;
@@ -46,6 +65,8 @@ OControl::OControl(OControlManager* manager)
 
     m_pManager = manager;
     m_hCursor = NULL;
+
+    m_clrText = RGB(255, 255, 255);
 }
 
 OControl::~OControl()
@@ -163,6 +184,11 @@ void OControl::SetRect(const CRect& rect)
     Invalidate();
 }
 
+void OControl::SetTextColor(COLORREF clrText)
+{
+    m_clrText = clrText;
+}
+
 void OControl::SetText(LPCTSTR szText)
 {
     m_strText = szText;
@@ -185,6 +211,7 @@ void OControl::Draw(HDC hDc) const
     if(!m_strText.IsEmpty())
     {
         OGdiObjSelector selector(hDc, GetFont());
+        OTextColor textColor(hDc, m_clrText);
         ::DrawText(hDc, m_strText, m_strText.GetLength(), (LPRECT)&m_Rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
     }
 }
@@ -458,6 +485,7 @@ void OCheckBox::Draw(HDC hDc) const
     CRect rcText(m_Rect);
     rcText.left += 2 + rcImage.Width();
     OGdiObjSelector selector(hDc, GetFont());
+    OTextColor textColor(hDc, m_clrText);
     ::DrawText(hDc, m_strText, m_strText.GetLength(), &rcText, DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_END_ELLIPSIS);
 }
 
