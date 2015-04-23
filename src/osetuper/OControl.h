@@ -25,6 +25,7 @@ public:
     BOOL Create(LPCTSTR szResName, UINT uCommandId, UINT uLayout, int nImageCount);
     BOOL Create(LPCTSTR szResName, UINT uCommandId, UINT uLayout, int nImageCount, const CRect& rcMargin);
 
+    BOOL IsVisible() const;
     UINT GetLayout() const;
     CRect GetRect() const;
     CRect GetMargin() const;
@@ -32,6 +33,7 @@ public:
     ControlStatus::Status GetStatus() const;
     virtual HFONT GetFont() const;
 
+    void SetVisible(BOOL bVisible);
     void SetHover(BOOL bHover, const CPoint& pt);
     void SetDown(BOOL bDown, const CPoint& pt);
     void SetRect(const CRect& rect);
@@ -68,6 +70,7 @@ protected:
     CString m_strText;
     HCURSOR m_hCursor;
     COLORREF m_clrText;
+    BOOL    m_bVisible;
 
     UINT    m_uCommandId;
     OControlManager* m_pManager;

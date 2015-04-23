@@ -45,8 +45,8 @@ void OExeResData::Release()
     if(m_pData == NULL)
         return;
 
-    ::UnlockResource(m_pData);
-    ::FreeResource(m_hGlobal);
+    UnlockResource(m_pData);
+    FreeResource(m_hGlobal);
     m_hRsrc = NULL;
     m_hGlobal = NULL;
     m_pData = NULL;

@@ -150,6 +150,8 @@ void OControlManager::Draw(HDC hDc, const CRect& rcClip)
     for(; ite != m_vctControls.end(); ++ ite)
     {
         OControl* control = *ite;
+        if(!control->IsVisible())
+            continue;
         rcControl = control->GetRect();
         if(!Util::IsRectsOverlapped(&rcClip, &rcControl))
             continue;
@@ -247,7 +249,7 @@ OControl* OControlManager::GetControlByPt(const CPoint& pt) const
     for(; ite != m_vctControls.end(); ++ ite)
     {
         OControl* control = *ite;
-        if(!control->NeedHover())
+        if(!control->NeedHover() || !control->IsVisible())
             continue;
         rcControl = control->GetRect();
         if(rcControl.PtInRect(pt))

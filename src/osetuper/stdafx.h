@@ -8,6 +8,9 @@
 #include "targetver.h"
 
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+
+
+
 // Windows Header Files:
 #include <windows.h>
 
@@ -17,8 +20,6 @@
 #include <memory.h>
 #include <tchar.h>
 
-#include <ShellAPI.h>
-
 #include <atlstr.h>
 #include <atlbase.h>
 #include <atlfile.h>
@@ -26,8 +27,9 @@
 #include <atlwin.h>
 #include <atltypes.h>
 
-#include <vector>
+#include <ShellAPI.h>
 
+#include <vector>
 
 #include <GdiPlus.h>
 #pragma comment(lib, "gdiplus.lib")

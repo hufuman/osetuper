@@ -10,5 +10,5 @@ public:
     CString Get(LPCTSTR szName) const;
 
 private:
-    CMapStringToString m_mapDatas;
+    CAtlMap<CString, CString> m_mapDatas;
 };

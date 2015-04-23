@@ -37,11 +37,12 @@ class OTextColor
 public:
     OTextColor(HDC hDc, COLORREF clrText)
     {
+        m_hDc = hDc;
         m_clrOld = ::SetTextColor(hDc, clrText);
     }
     ~OTextColor()
     {
-        ::SelectObject(m_hDc, m_clrOld);
+        ::SetTextColor(m_hDc, m_clrOld);
     }
 private:
     HDC     m_hDc;
@@ -65,6 +66,7 @@ OControl::OControl(OControlManager* manager)
 
     m_pManager = manager;
     m_hCursor = NULL;
+    m_bVisible = TRUE;
 
     m_clrText = RGB(255, 255, 255);
 }
@@ -104,6 +106,11 @@ BOOL OControl::Create(LPCTSTR szResName, UINT uCommandId, UINT uLayout, int nIma
     return TRUE;
 }
 
+BOOL OControl::IsVisible() const
+{
+    return m_bVisible;
+}
+
 UINT OControl::GetLayout() const
 {
     return m_uLayout;
@@ -132,6 +139,12 @@ ControlStatus::Status OControl::GetStatus() const
 HFONT OControl::GetFont() const
 {
     return NULL;
+}
+
+void OControl::SetVisible(BOOL bVisible)
+{
+    m_bVisible = bVisible;
+    Invalidate();
 }
 
 void OControl::SetHover(BOOL bHover, const CPoint& pt)

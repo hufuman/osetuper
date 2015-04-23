@@ -319,6 +319,38 @@
 			Name="Pages"
 			>
 			<File
+				RelativePath=".\BasePage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FinishPage.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FinishPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\InstallPage.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\InstallPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PageManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PageManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WelcomePage.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\WelcomePage.h"
 				>
 			</File>

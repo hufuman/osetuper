@@ -6,6 +6,7 @@
 #pragma once
 
 #include "OControlManager.h"
+#include "PageManager.h"
 
 
 class CMainDlg : public BaseDlg<CMainDlg>, public CMessageFilter
@@ -14,7 +15,7 @@ public:
 	enum { IDD = IDD_DIALOG_MAIN };
 
 
-	CMainDlg()
+    CMainDlg() : m_PageManager(&m_ControlManager)
 	{
     }
 
@@ -119,6 +120,8 @@ public:
 
         m_strAppName.LoadString(IDS_APP_NAME);
 
+        m_PageManager.ShowPage(CPageManager::PageWelcome);
+
         InitLayout();
 
         CenterWindow();
@@ -163,5 +166,6 @@ public:
 private:
     CString         m_strAppName;
 
+    CPageManager    m_PageManager;
     OControlManager m_ControlManager;
 };
