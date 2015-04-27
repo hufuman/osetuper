@@ -23,12 +23,6 @@ public:
 
     virtual void Destroy()
     {
-        size_t count = m_arrControls.size();
-        for(size_t i=0; i<count; ++ i)
-        {
-            OControl* page = m_arrControls[i];
-            delete page;
-        }
         m_arrControls.clear();
     }
 

@@ -7,6 +7,7 @@
 
 #include "OControlManager.h"
 #include "PageManager.h"
+#include "StringBundle.h"
 
 
 class CMainDlg : public BaseDlg<CMainDlg>, public CMessageFilter
@@ -41,6 +42,11 @@ public:
         COMMAND_ID_HANDLER(IDC_BTN_SYS_MIN, OnBtnSysMin)
         COMMAND_ID_HANDLER(IDC_BTN_SYS_CLOSE, OnBtnSysClose)
 
+        COMMAND_ID_HANDLER(IDC_BTN_PREV_PAGE, OnBtnPrevPage)
+        COMMAND_ID_HANDLER(IDC_BTN_NEXT_PAGE, OnBtnNextPage)
+        COMMAND_ID_HANDLER(IDC_BTN_CANCEL, OnBtnCancel)
+        COMMAND_ID_HANDLER(IDC_BTN_FINISH, OnBtnFinish)
+
         if(uMsg == 0xAE // WM_NCUAHDRAWCAPTION
             || uMsg == 0xAF) // WM_NCUAHDRAWFRAME
         {
@@ -63,6 +69,31 @@ public:
         return 0;
     }
 
+    LRESULT OnBtnPrevPage(UINT /*uCode*/, UINT /*uCommandId*/, HWND /*hWndControl*/, BOOL& /*bHandled*/)
+    {
+        m_PageManager.PrevPage();
+        return 0;
+    }
+
+
+    LRESULT OnBtnNextPage(UINT /*uCode*/, UINT /*uCommandId*/, HWND /*hWndControl*/, BOOL& /*bHandled*/)
+    {
+        m_PageManager.NextPage();
+        return 0;
+    }
+
+
+    LRESULT OnBtnCancel(UINT /*uCode*/, UINT /*uCommandId*/, HWND /*hWndControl*/, BOOL& /*bHandled*/)
+    {
+        DestroyWindow();
+        return 0;
+    }
+
+    LRESULT OnBtnFinish(UINT /*uCode*/, UINT /*uCommandId*/, HWND /*hWndControl*/, BOOL& /*bHandled*/)
+    {
+        DestroyWindow();
+        return 0;
+    }
     LRESULT OnBtnSysClose(UINT /*uCode*/, UINT /*uCommandId*/, HWND /*hWndControl*/, BOOL& /*bHandled*/)
     {
         ::DestroyWindow(m_hWnd);
@@ -120,6 +151,10 @@ public:
 
         m_strAppName.LoadString(IDS_APP_NAME);
 
+        CStringBundle::GetInst().Init();
+        m_ControlManager.Init(m_hWnd);
+        SetWindowPos(NULL, 0, 0, 520, 340, SWP_NOMOVE | SWP_NOZORDER);
+
         m_PageManager.ShowPage(CPageManager::PageWelcome);
 
         InitLayout();
@@ -139,28 +174,10 @@ public:
     // Layout
     void InitLayout()
     {
-        m_ControlManager.Init(m_hWnd);
+        CRect rcMargin;
 
-        CRect rcTemp(0, 0, 0, 0);
-
-        OShape* pShape = m_ControlManager.CreateShape(RGB(255, 255, 0), ManagerLayout::VFill | ManagerLayout::HFill, rcTemp);
-        pShape = pShape;
-
-        OButton* pBtnClose = m_ControlManager.CreateButton(_T("sysclosebutton"), IDC_BTN_SYS_CLOSE, ManagerLayout::Top | ManagerLayout::Right, 4, rcTemp);
-        rcTemp = pBtnClose->GetRect();
-        rcTemp.top = 0;
-        rcTemp.right = rcTemp.Width();
-        m_ControlManager.CreateButton(_T("sysminbutton"), IDC_BTN_SYS_MIN, ManagerLayout::Top | ManagerLayout::Right, 3, rcTemp);
-
-        rcTemp.SetRect(0, 0, 0, 0);
-        OCheckBox* pChkBox = m_ControlManager.CreateCheckBox(_T("checkbutton"), 0, ManagerLayout::Bottom | ManagerLayout::Left, rcTemp);
-        pChkBox->SetText(_T("asdfadsfdsaf"));
-
-        rcTemp.SetRect(20, 20, 20, 20);
-        m_ControlManager.CreateEdit(_T("E:\\Test\\Text"), ManagerLayout::Bottom | ManagerLayout::HFill, rcTemp);
-
-        rcTemp.SetRect(20, 20, 20, 20);
-        m_ControlManager.CreateLink(_T("E:\\Test\\Text"), ManagerLayout::Top | ManagerLayout::HFill, rcTemp);
+        rcMargin.SetRect(2, 0, 0, 2);
+        m_ControlManager.CreateButton(_T("sysclosebutton"), IDC_BTN_SYS_CLOSE, ManagerLayout::Top | ManagerLayout::Right, 4, rcMargin);
     }
 
 private:

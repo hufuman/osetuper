@@ -27,6 +27,8 @@ public:
 
 public:
     void ShowPage(PageIndex index);
+    void PrevPage();
+    void NextPage();
 
 private:
     PageInfo* GetPageByIndex(PageIndex index);
@@ -35,7 +37,7 @@ private:
 private:
     OControlManager* m_pControlManager;
 
-    typedef std::vector<PageInfo> PageArray;
+    typedef std::vector<PageInfo*> PageArray;
     PageArray   m_arrPages;
 
     PageInfo*   m_pLastPage;

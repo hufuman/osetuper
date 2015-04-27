@@ -4,6 +4,8 @@
 
 #include "Util.h"
 #include "OControlManager.h"
+#include "OGdiObjManager.h"
+
 
 class OGdiObjSelector
 {
@@ -63,10 +65,12 @@ OControl::OControl(OControlManager* manager)
     m_SizeOfImage.cx = m_SizeOfImage.cy = 0;
     m_Rect.SetRect(0, 0, 0, 0);
     m_Margin.SetRect(0, 0, 0, 0);
+    m_minSize.SetSize(-1, -1);
 
     m_pManager = manager;
     m_hCursor = NULL;
     m_bVisible = TRUE;
+    m_hFont = OGdiObjManager::GetInst().GetFont(14);
 
     m_clrText = RGB(255, 255, 255);
 }
@@ -138,7 +142,7 @@ ControlStatus::Status OControl::GetStatus() const
 
 HFONT OControl::GetFont() const
 {
-    return NULL;
+    return m_hFont;
 }
 
 void OControl::SetVisible(BOOL bVisible)
@@ -191,6 +195,12 @@ void OControl::SetDown(BOOL bDown, const CPoint& pt)
     Invalidate();
 }
 
+void OControl::SetMinSize(int nMinWidth, int nMinHeight)
+{
+    m_minSize.SetSize(nMinWidth, nMinHeight);
+    AutoSize();
+}
+
 void OControl::SetRect(const CRect& rect)
 {
     m_Rect = rect;
@@ -205,7 +215,26 @@ void OControl::SetTextColor(COLORREF clrText)
 void OControl::SetText(LPCTSTR szText)
 {
     m_strText = szText;
-    Invalidate();
+    AutoSize();
+}
+
+// 14,FFFFFF,通用安装包
+void OControl::SetTextAttr(LPCTSTR szTextAttr, BOOL bAutoSize)
+{
+    CString strTextAttr(szTextAttr);
+    int start = 0;
+    CString fontSize = strTextAttr.Tokenize(_T(","), start);
+    m_hFont = OGdiObjManager::GetInst().GetFont(_ttoi(fontSize));
+    CString textColor = strTextAttr.Tokenize(_T(","), start);
+    int byRed, byGreen, byBlue;
+    _sntscanf(textColor, 123, _T("%02x%02x%02x"), &byRed, &byGreen, &byBlue);
+    m_clrText = RGB(byRed, byGreen, byBlue);
+    m_strText = strTextAttr.Tokenize(_T(","), start);
+
+    if(bAutoSize)
+        AutoSize();
+    else
+        Invalidate();
 }
 
 CString OControl::GetText() const
@@ -246,37 +275,34 @@ HCURSOR OControl::GetCursor() const
 
 CSize OControl::GetAutoSize() const
 {
+    CSize size;
     if(m_hImage == NULL)
     {
-        if(m_Rect.IsRectEmpty())
+        if(m_strText.IsEmpty())
         {
-            CString strText = m_strText;
-            if(strText.IsEmpty())
-            {
-                strText = _T("for good osetuper");
-            }
-            CRect rcText(0, 0, 65535, 65535);
-            HDC hClientDc = ::GetDC(m_pManager->GetWindow());
-            OGdiObjSelector selector(hClientDc, GetFont());
-            ::DrawText(hClientDc, strText, strText.GetLength(), &rcText, DT_SINGLELINE | DT_LEFT | DT_TOP | DT_CALCRECT);
-            ::ReleaseDC(m_pManager->GetWindow(), hClientDc);
-
-            CSize size(rcText.Width(), rcText.Height());
-            return size;
+            size.SetSize(m_Rect.Width(), m_Rect.Height());
         }
         else
         {
-            CSize size(m_Rect.Width(), m_Rect.Height());
-            return size;
+            CRect rcText(0, 0, 65535, 65535);
+            HDC hClientDc = ::GetDC(m_pManager->GetWindow());
+            OGdiObjSelector selector(hClientDc, GetFont());
+            ::DrawText(hClientDc, m_strText, m_strText.GetLength(), &rcText, DT_SINGLELINE | DT_LEFT | DT_TOP | DT_CALCRECT);
+            ::ReleaseDC(m_pManager->GetWindow(), hClientDc);
+
+            size.SetSize(rcText.Width(), rcText.Height());
         }
     }
     else
     {
-        CSize size(m_SizeOfImage);
         size.cx = m_SizeOfImage.cx / m_nHorzImageCount;
         size.cy = m_SizeOfImage.cy / m_nVertImageCount;
-        return size;
     }
+    if(m_minSize.cx > -1 && m_minSize.cx > size.cx)
+        size.cx = m_minSize.cx;
+    if(m_minSize.cy > -1 && m_minSize.cy > size.cy)
+        size.cy = m_minSize.cy;
+    return size;
 }
 
 void OControl::AutoSize()
@@ -322,6 +348,11 @@ void OControl::GetControlRect(int nWidth, int nHeight, CRect& rcControl) const
         rcControl.bottom = nHeight - rcMargin.bottom;
         rcControl.top = rcMargin.top;
     }
+    else if(uLayout & ManagerLayout::VCenter)
+    {
+        rcControl.top = (nHeight - rcMargin.bottom - rcMargin.top - size.cy) / 2;
+        rcControl.bottom = rcControl.top + size.cy;
+    }
 
     if(uLayout & ManagerLayout::Left)
     {
@@ -337,6 +368,11 @@ void OControl::GetControlRect(int nWidth, int nHeight, CRect& rcControl) const
     {
         rcControl.left = rcMargin.left;
         rcControl.right = nWidth - rcMargin.right;
+    }
+    else if(uLayout & ManagerLayout::HCenter)
+    {
+        rcControl.left = (nWidth - rcMargin.left - rcMargin.right - size.cx) / 2;
+        rcControl.right = rcControl.left + size.cx;
     }
 }
 
@@ -371,7 +407,14 @@ void OControl::OnCreate()
 
 //////////////////////////////////////////////////////////////////////////
 OButton::OButton(OControlManager* manager)
-    : OControl(manager)
+: OControl(manager)
+{
+    ;
+}
+
+//////////////////////////////////////////////////////////////////////////
+OLabel::OLabel(OControlManager* manager)
+: OControl(manager)
 {
     ;
 }
@@ -382,30 +425,65 @@ OShape::OShape(OControlManager* manager)
     : OControl(manager)
 {
     m_hBrush = NULL;
+    m_hPen = NULL;
+    m_Color = RGB(255, 255, 255);
+    m_nBorderWidth = 0;
 }
 
 OShape::~OShape()
 {
-    ::DeleteObject(m_hBrush);
-    m_hBrush = NULL;
+    Destroy();
 }
 
 void OShape::SetColor(COLORREF color)
 {
-    if(m_hBrush != NULL)
-        ::DeleteObject(m_hBrush);
-    m_hBrush = ::CreateSolidBrush(color);
+    m_Color = color;
+    Destroy();
+    Invalidate();
+}
+
+void OShape::SetBorder(int nBorderWidth)
+{
+    m_nBorderWidth = nBorderWidth;
     Invalidate();
 }
 
 void OShape::Draw(HDC hDc) const
 {
-    ::FillRect(hDc, &m_Rect, m_hBrush);
+    if(m_nBorderWidth == 0)
+    {
+        if(m_hBrush == NULL)
+            m_hBrush = ::CreateSolidBrush(m_Color);
+        ::FillRect(hDc, &m_Rect, m_hBrush);
+    }
+    else
+    {
+        if(m_hPen == NULL)
+            m_hPen = ::CreatePen(PS_SOLID, m_nBorderWidth, m_Color);
+        OGdiObjSelector penSelector(hDc, m_hPen);
+        OGdiObjSelector brushSelector(hDc, GetStockObject(NULL_BRUSH));
+        ::Rectangle(hDc, m_Rect.left, m_Rect.top, m_Rect.right, m_Rect.bottom);
+    }
+    __super::Draw(hDc);
 }
 
 BOOL OShape::NeedHover() const
 {
     return FALSE;
+}
+
+void OShape::Destroy()
+{
+    if(m_hBrush != NULL)
+    {
+        ::DeleteObject(m_hBrush);
+        m_hBrush = NULL;
+    }
+    if(m_hPen != NULL)
+    {
+        ::DeleteObject(m_hPen);
+        m_hPen = NULL;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////

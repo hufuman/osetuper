@@ -37,8 +37,11 @@ public:
     void SetHover(BOOL bHover, const CPoint& pt);
     void SetDown(BOOL bDown, const CPoint& pt);
     void SetRect(const CRect& rect);
+    void SetMinSize(int nMinWidth, int nMinHeight);
     void SetTextColor(COLORREF clrText);
     virtual void SetText(LPCTSTR szText);
+    // 14,FFFFFF,通用安装包
+    virtual void SetTextAttr(LPCTSTR szTextAttr, BOOL bAutoSize);
     virtual CString GetText() const;
 
     virtual void Draw(HDC hDc) const;
@@ -66,11 +69,13 @@ protected:
     UINT    m_uLayout;
     CRect   m_Rect;
     CRect   m_Margin;
+    CSize   m_minSize;
 
     CString m_strText;
     HCURSOR m_hCursor;
     COLORREF m_clrText;
     BOOL    m_bVisible;
+    HFONT   m_hFont;
 
     UINT    m_uCommandId;
     OControlManager* m_pManager;
@@ -86,19 +91,36 @@ public:
     OButton(OControlManager* manager);
 };
 
+
+//////////////////////////////////////////////////////////////////////////
+class OLabel : public OControl
+{
+public:
+    OLabel(OControlManager* manager);
+};
+
 //////////////////////////////////////////////////////////////////////////
 class OShape : public OControl
 {
 public:
     OShape(OControlManager* manager);
     ~OShape();
+
     void SetColor(COLORREF color);
+    void SetBorder(int nBorderWidth);
 
 public:
     virtual void Draw(HDC hDc) const;
     virtual BOOL NeedHover() const;
+
 private:
-    HBRUSH m_hBrush;
+    void Destroy();
+
+private:
+    mutable HBRUSH m_hBrush;
+    mutable HPEN m_hPen;
+    COLORREF m_Color;
+    int m_nBorderWidth;
 };
 
 //////////////////////////////////////////////////////////////////////////

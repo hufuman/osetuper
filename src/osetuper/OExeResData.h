@@ -8,7 +8,7 @@ public:
 
     BOOL LoadData(LPCTSTR szResName, LPCTSTR szType);
 
-    void* GetData() const;
+    LPBYTE GetData() const;
     DWORD GetSize() const;
 
 private:

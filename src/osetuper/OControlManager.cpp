@@ -195,24 +195,35 @@ OShape* OControlManager::CreateShape(COLORREF color, UINT uLayout, const CRect& 
     return control;
 }
 
-OEdit* OControlManager::CreateEdit(LPCTSTR szText, UINT uLayout, const CRect& rcMargin)
+OEdit* OControlManager::CreateEdit(LPCTSTR szTextAttr, UINT uLayout, const CRect& rcMargin)
 {
     OEdit* control = new OEdit(this);
     m_vctControls.push_back(control);
 
     control->Create(NULL, 0, uLayout, 0, rcMargin);
-    control->SetText(szText);
+    control->SetTextAttr(szTextAttr, FALSE);
 
     return control;
 }
 
-OLink* OControlManager::CreateLink(LPCTSTR szText, UINT uLayout, const CRect& rcMargin)
+OLink* OControlManager::CreateLink(LPCTSTR szTextAttr, UINT uLayout, const CRect& rcMargin)
 {
     OLink* control = new OLink(this);
     m_vctControls.push_back(control);
 
     control->Create(NULL, 0, uLayout, 0, rcMargin);
-    control->SetText(szText);
+    control->SetTextAttr(szTextAttr, TRUE);
+
+    return control;
+}
+
+OLabel* OControlManager::CreateLabel(LPCTSTR szTextAttr, UINT uLayout, const CRect& rcMargin)
+{
+    OLabel* control = new OLabel(this);
+    m_vctControls.push_back(control);
+
+    control->Create(NULL, 0, uLayout, 0, rcMargin);
+    control->SetTextAttr(szTextAttr, TRUE);
 
     return control;
 }

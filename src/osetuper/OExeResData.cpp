@@ -30,9 +30,9 @@ BOOL OExeResData::LoadData(LPCTSTR szResName, LPCTSTR szType)
     return TRUE;
 }
 
-void* OExeResData::GetData() const
+LPBYTE OExeResData::GetData() const
 {
-    return m_pData;
+    return (LPBYTE)m_pData;
 }
 
 DWORD OExeResData::GetSize() const

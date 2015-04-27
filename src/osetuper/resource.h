@@ -9,7 +9,13 @@
 #define IDC_LABEL_AUTHOR                1011
 #define IDC_BTN_SYS_MIN                 1012
 #define IDC_BTN_SYS_CLOSE               1013
-#define IDC_STATIC                      -1
+#define IDC_BTN_PREV_PAGE               1014
+#define IDC_BTN_NEXT_PAGE               1015
+#define IDC_BTN_CANCEL                  1016
+#define IDC_BTN_FINISH                  1017
+#define IDC_CHK_AGREE                   1018
+#define IDC_LINK_LICENSE                1019
+
 
 // Next default values for new objects
 // 
@@ -18,7 +24,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        149
 #define _APS_NEXT_COMMAND_VALUE         32790
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_CONTROL_VALUE         1020
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif
