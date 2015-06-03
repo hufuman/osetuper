@@ -10,6 +10,7 @@ public:
     enum PageIndex
     {
         PageWelcome,
+        PageCustom,
         PageInstall,
         PageFinish,
     };
@@ -29,6 +30,8 @@ public:
     void ShowPage(PageIndex index);
     void PrevPage();
     void NextPage();
+    BOOL HandleMsg(UINT message, WPARAM wParam, LPARAM lParam, LRESULT& lResult);
+    PageIndex GetCurPageIndex() const;
 
 private:
     PageInfo* GetPageByIndex(PageIndex index);

@@ -15,6 +15,9 @@
 #define IDC_BTN_FINISH                  1017
 #define IDC_CHK_AGREE                   1018
 #define IDC_LINK_LICENSE                1019
+#define IDC_BTN_BROWSE                  1020
+#define IDC_BTN_AGREE                   1021
+#define IDC_BTN_START                   1022
 
 
 // Next default values for new objects
@@ -24,7 +27,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        149
 #define _APS_NEXT_COMMAND_VALUE         32790
-#define _APS_NEXT_CONTROL_VALUE         1020
+#define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

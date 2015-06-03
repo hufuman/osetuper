@@ -9,6 +9,8 @@ class OGdiObjManager
     struct FontData
     {
         int fontSize;
+        bool bold;
+        bool linkFont;
         HFONT hFont;
     };
     OGdiObjManager(void);
@@ -19,7 +21,11 @@ public:
 
     static OGdiObjManager& GetInst();
 
-    HFONT GetFont(int fontSize);
+    HFONT GetFont(int fontSize, bool bold);
+    HFONT GetLinkFont(HFONT hFont);
+
+private:
+    HFONT GetFontImpl(int fontSize, bool bold, bool linkFont);
 
 private:
     typedef std::vector<FontData*> FontDataArray;

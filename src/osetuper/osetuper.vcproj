@@ -339,6 +339,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CustomPage.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CustomPage.h"
+				>
+			</File>
+			<File
 				RelativePath=".\FinishPage.cpp"
 				>
 			</File>
@@ -368,6 +376,26 @@
 			</File>
 			<File
 				RelativePath=".\WelcomePage.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="SetupLogic"
+			>
+			<File
+				RelativePath=".\SetupData.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SetupData.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SetupWorker.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SetupWorker.h"
 				>
 			</File>
 		</Filter>

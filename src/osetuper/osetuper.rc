@@ -109,8 +109,9 @@ END
 
 SYSCLOSEBUTTON          PNG                     "resource\\sysclosebutton.png"
 SYSMINBUTTON            PNG                     "resource\\sysminbutton.png"
-CHECKBUTTON             PNG                     "resource\\checkbutton.png"
+CHECKBOX                PNG                     "resource\\checkbox.png"
 PUSHBUTTON              PNG                     "resource\\pushbutton.png"
+LOGO                    PNG                     "resource\\logo.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //

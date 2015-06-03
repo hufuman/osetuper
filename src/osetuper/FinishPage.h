@@ -12,5 +12,8 @@ public:
 
 public:
     virtual void Create();
+    virtual void Show(BOOL bShow);
 
+private:
+    OCheckBox* m_pChkStart;
 };

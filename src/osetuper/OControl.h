@@ -15,6 +15,16 @@ public:
     };
 };
 
+class TextAlign
+{
+public:
+    enum Align
+    {
+        AlignCenter     = 0x01,
+        AlignVCenter    = 0x02,
+    };
+};
+
 //////////////////////////////////////////////////////////////////////////
 class OControl
 {
@@ -33,21 +43,23 @@ public:
     ControlStatus::Status GetStatus() const;
     virtual HFONT GetFont() const;
 
-    void SetVisible(BOOL bVisible);
+    virtual void SetVisible(BOOL bVisible);
     void SetHover(BOOL bHover, const CPoint& pt);
     void SetDown(BOOL bDown, const CPoint& pt);
     void SetRect(const CRect& rect);
     void SetMinSize(int nMinWidth, int nMinHeight);
     void SetTextColor(COLORREF clrText);
     virtual void SetText(LPCTSTR szText);
+    void SetTextAlign(UINT align);
     // 14,FFFFFF,通用安装包
-    virtual void SetTextAttr(LPCTSTR szTextAttr, BOOL bAutoSize);
+    virtual void SetTextAttr(LPCTSTR szTextAttrTitle, BOOL bAutoSize);
     virtual CString GetText() const;
 
     virtual void Draw(HDC hDc) const;
     virtual CSize GetAutoSize() const;
     virtual void AutoSize();
     virtual void AutoSize(int nWidth, int nHeight);
+    void SetAutoSize(BOOL bAutoSize);
 
     void Invalidate() const;
 
@@ -59,6 +71,7 @@ protected:
     void GetControlRect(int nWidth, int nHeight, CRect& rcControl) const;
     CRect GetStatusImageRect() const;
     virtual void OnCreate();
+    DWORD GetDrawTextFlag() const;
 
 protected:
     HBITMAP m_hImage;
@@ -74,12 +87,15 @@ protected:
     CString m_strText;
     HCURSOR m_hCursor;
     COLORREF m_clrText;
+    COLORREF m_clrTextHover;
     BOOL    m_bVisible;
     HFONT   m_hFont;
+    UINT    m_uTextAlign;
 
     UINT    m_uCommandId;
     OControlManager* m_pManager;
 
+    BOOL    m_bAutoSize;
     ControlStatus::Status m_Status;
 };
 
@@ -89,6 +105,14 @@ class OButton : public OControl
 {
 public:
     OButton(OControlManager* manager);
+};
+
+
+//////////////////////////////////////////////////////////////////////////
+class OImage : public OControl
+{
+public:
+    OImage(OControlManager* manager);
 };
 
 
@@ -124,14 +148,30 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-class OEdit : public OControl
+class ORealControl : public OControl
+{
+public:
+    ORealControl(OControlManager* manager);
+
+    void SetBackColor(COLORREF clrBack);
+    HBRUSH OnCtlColor(HDC hDc);
+
+protected:
+    HBRUSH m_hBackBrush;
+};
+
+//////////////////////////////////////////////////////////////////////////
+class OEdit : public ORealControl
 {
 public:
     OEdit(OControlManager* manager);
     ~OEdit();
 
+    void SetReadOnly(BOOL bReadOnly);
+
     virtual void SetText(LPCTSTR szText);
     virtual CString GetText() const;
+    virtual void SetVisible(BOOL bVisible);
 
     virtual BOOL NeedHover() const;
 
@@ -169,9 +209,8 @@ public:
     OLink(OControlManager* manager);
     virtual void Draw(HDC hDc) const;
 
-protected:
-    virtual HFONT GetFont() const;
+    virtual void SetTextAttr(LPCTSTR szTextAttrTitle, BOOL bAutoSize);
 
 protected:
-    HFONT m_hLinkFont;
+    mutable HFONT m_hLinkFont;
 };

@@ -5,6 +5,7 @@
 #include "Util.h"
 #include "OControlManager.h"
 #include "OGdiObjManager.h"
+#include "StringBundle.h"
 
 
 class OGdiObjSelector
@@ -42,6 +43,17 @@ public:
         m_hDc = hDc;
         m_clrOld = ::SetTextColor(hDc, clrText);
     }
+    OTextColor(HDC hDc)
+    {
+        m_hDc = hDc;
+        m_clrOld = RGB(255, 255, 0);
+    }
+    void SetColor(COLORREF clrText)
+    {
+        DWORD clrOld = ::SetTextColor(m_hDc, clrText);
+        if(m_clrOld == RGB(255, 255, 0))
+            m_clrOld = clrOld;
+    }
     ~OTextColor()
     {
         ::SetTextColor(m_hDc, m_clrOld);
@@ -70,9 +82,12 @@ OControl::OControl(OControlManager* manager)
     m_pManager = manager;
     m_hCursor = NULL;
     m_bVisible = TRUE;
-    m_hFont = OGdiObjManager::GetInst().GetFont(14);
+    m_hFont = OGdiObjManager::GetInst().GetFont(14, false);
 
     m_clrText = RGB(255, 255, 255);
+    m_clrTextHover = m_clrText;
+    m_uTextAlign = TextAlign::AlignCenter | TextAlign::AlignVCenter;
+    m_bAutoSize = TRUE;
 }
 
 OControl::~OControl()
@@ -218,18 +233,39 @@ void OControl::SetText(LPCTSTR szText)
     AutoSize();
 }
 
-// 14,FFFFFF,通用安装包
-void OControl::SetTextAttr(LPCTSTR szTextAttr, BOOL bAutoSize)
+void OControl::SetTextAlign(UINT align)
 {
-    CString strTextAttr(szTextAttr);
-    int start = 0;
-    CString fontSize = strTextAttr.Tokenize(_T(","), start);
-    m_hFont = OGdiObjManager::GetInst().GetFont(_ttoi(fontSize));
-    CString textColor = strTextAttr.Tokenize(_T(","), start);
-    int byRed, byGreen, byBlue;
-    _sntscanf(textColor, 123, _T("%02x%02x%02x"), &byRed, &byGreen, &byBlue);
-    m_clrText = RGB(byRed, byGreen, byBlue);
-    m_strText = strTextAttr.Tokenize(_T(","), start);
+    m_uTextAlign = align;
+}
+
+// 14,FFFFFF,通用安装包
+void OControl::SetTextAttr(LPCTSTR szTextAttrTitle, BOOL bAutoSize)
+{
+    if(szTextAttrTitle != NULL && szTextAttrTitle[0] != 0)
+    {
+        CString strTextAttr(CStringBundle::GetInst().Get(szTextAttrTitle));
+        int start = 0;
+        CString fontSize = strTextAttr.Tokenize(_T(","), start);
+        bool bBold = fontSize[fontSize.GetLength() - 1] == _T('b');
+        if(bBold)
+            fontSize = fontSize.Mid(0, fontSize.GetLength() - 1);
+        m_hFont = OGdiObjManager::GetInst().GetFont(_ttoi(fontSize), bBold);
+        CString textColor = strTextAttr.Tokenize(_T(","), start);
+        int byRed, byGreen, byBlue;
+        _sntscanf(textColor, 123, _T("%02x%02x%02x"), &byRed, &byGreen, &byBlue);
+        m_clrText = RGB(byRed, byGreen, byBlue);
+        m_strText = strTextAttr.Tokenize(_T(","), start);
+        m_clrTextHover = m_clrText;
+        if(start > 0)
+        {
+            CString hoverTextColor = strTextAttr.Tokenize(_T(","), start);
+            if(!hoverTextColor.IsEmpty())
+            {
+                _sntscanf(hoverTextColor, 123, _T("%02x%02x%02x"), &byRed, &byGreen, &byBlue);
+                m_clrTextHover = RGB(byRed, byGreen, byBlue);
+            }
+        }
+    }
 
     if(bAutoSize)
         AutoSize();
@@ -253,8 +289,12 @@ void OControl::Draw(HDC hDc) const
     if(!m_strText.IsEmpty())
     {
         OGdiObjSelector selector(hDc, GetFont());
-        OTextColor textColor(hDc, m_clrText);
-        ::DrawText(hDc, m_strText, m_strText.GetLength(), (LPRECT)&m_Rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+        OTextColor textColor(hDc);
+        if(ControlStatus::StatusHover == m_Status)
+            textColor.SetColor(m_clrTextHover);
+        else
+            textColor.SetColor(m_clrText);
+        ::DrawText(hDc, m_strText, m_strText.GetLength(), (LPRECT)&m_Rect, GetDrawTextFlag());
     }
 }
 
@@ -307,6 +347,11 @@ CSize OControl::GetAutoSize() const
 
 void OControl::AutoSize()
 {
+    if(!m_bAutoSize)
+    {
+        Invalidate();
+        return;
+    }
     CRect rcClient;
     ::GetClientRect(m_pManager->GetWindow(), &rcClient);
     AutoSize(rcClient.Width(), rcClient.Height());
@@ -314,9 +359,19 @@ void OControl::AutoSize()
 
 void OControl::AutoSize(int nWidth, int nHeight)
 {
+    if(!m_bAutoSize)
+    {
+        Invalidate();
+        return;
+    }
     CRect rcControl;
     GetControlRect(nWidth, nHeight, rcControl);
     SetRect(rcControl);
+}
+
+void OControl::SetAutoSize(BOOL bAutoSize)
+{
+    m_bAutoSize = bAutoSize;
 }
 
 void OControl::FireCommand(UINT uCommandCode)
@@ -374,11 +429,17 @@ void OControl::GetControlRect(int nWidth, int nHeight, CRect& rcControl) const
         rcControl.left = (nWidth - rcMargin.left - rcMargin.right - size.cx) / 2;
         rcControl.right = rcControl.left + size.cx;
     }
+    if(rcControl.top == rcControl.bottom)
+    {
+        rcControl.bottom = rcControl.top + Util::GetTextHeight(m_pManager->GetWindow(), m_hFont);
+    }
 }
 
 CRect OControl::GetStatusImageRect() const
 {
     CRect rcImage(0, 0, m_SizeOfImage.cx, m_SizeOfImage.cy);
+    if(m_nHorzImageCount == 1)
+        return rcImage;
 
     switch(m_Status)
     {
@@ -405,8 +466,25 @@ void OControl::OnCreate()
     ;
 }
 
+DWORD OControl::GetDrawTextFlag() const
+{
+    DWORD dwResult = DT_SINGLELINE | DT_END_ELLIPSIS;
+    if(m_uTextAlign & TextAlign::AlignCenter)
+        dwResult |= DT_CENTER;
+    if(m_uTextAlign & TextAlign::AlignVCenter)
+        dwResult |= DT_VCENTER;
+    return dwResult;
+}
+
 //////////////////////////////////////////////////////////////////////////
 OButton::OButton(OControlManager* manager)
+: OControl(manager)
+{
+    ;
+}
+
+//////////////////////////////////////////////////////////////////////////
+OImage::OImage(OControlManager* manager)
 : OControl(manager)
 {
     ;
@@ -487,8 +565,29 @@ void OShape::Destroy()
 }
 
 //////////////////////////////////////////////////////////////////////////
+ORealControl::ORealControl(OControlManager* manager)
+: OControl(manager)
+{
+    m_hBackBrush = NULL;
+}
+
+void ORealControl::SetBackColor(COLORREF clrBack)
+{
+    if(m_hBackBrush != NULL)
+        ::DeleteObject(m_hBackBrush);
+    m_hBackBrush = ::CreateSolidBrush(clrBack);
+}
+
+HBRUSH ORealControl::OnCtlColor(HDC hDc)
+{
+    ::SetTextColor(hDc, m_clrText);
+    ::SetBkMode(hDc, TRANSPARENT);
+    return m_hBackBrush;
+}
+
+//////////////////////////////////////////////////////////////////////////
 OEdit::OEdit(OControlManager* manager)
-    : OControl(manager)
+    : ORealControl(manager)
 {
     m_hWndEdit = NULL;
 }
@@ -497,6 +596,11 @@ OEdit::~OEdit()
 {
     if(m_hWndEdit != NULL)
         ::DestroyWindow(m_hWndEdit);
+}
+
+void OEdit::SetReadOnly(BOOL bReadOnly)
+{
+    ::SendMessage(m_hWndEdit, EM_SETREADONLY, bReadOnly, 0L);
 }
 
 void OEdit::SetText(LPCTSTR szText)
@@ -518,6 +622,13 @@ CString OEdit::GetText() const
     return strText;
 }
 
+void OEdit::SetVisible(BOOL bVisible)
+{
+    __super::SetVisible(bVisible);
+    if(m_hWndEdit != NULL)
+        ::ShowWindow(m_hWndEdit, bVisible ? SW_SHOW : SW_HIDE);
+}
+
 BOOL OEdit::NeedHover() const
 {
     return FALSE;
@@ -535,6 +646,19 @@ void OEdit::OnCreate()
         NULL, ::GetModuleHandle(NULL), 0);
     HFONT hFont = (HFONT)::SendMessage(m_pManager->GetWindow(), WM_GETFONT, 0, 0);
     ::SendMessage(m_hWndEdit, WM_SETFONT, (WPARAM)hFont, 0);
+    ::SetWindowLongPtr(m_hWndEdit, GWLP_USERDATA, (LONG)this);
+
+    // text VCenter
+    CRect rcTemp;
+    ::GetClientRect(m_hWndEdit, &rcTemp);
+    HDC hDc = GetDC(m_hWndEdit);
+    TEXTMETRIC tm;
+    ::GetTextMetrics(hDc, &tm);
+    int nFontHeight = tm.tmHeight + tm.tmExternalLeading;
+    int nMargin = (rcTemp.Height() - nFontHeight) / 2;
+    rcTemp.DeflateRect(0,nMargin);
+    ::SendMessage(m_hWndEdit, EM_SETRECTNP, 0, (LPARAM)&rcTemp);
+    ReleaseDC(m_hWndEdit, hDc) ;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -577,7 +701,7 @@ void OCheckBox::Draw(HDC hDc) const
     rcText.left += 2 + rcImage.Width();
     OGdiObjSelector selector(hDc, GetFont());
     OTextColor textColor(hDc, m_clrText);
-    ::DrawText(hDc, m_strText, m_strText.GetLength(), &rcText, DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_END_ELLIPSIS);
+    ::DrawText(hDc, m_strText, m_strText.GetLength(), &rcText, GetDrawTextFlag());
 }
 
 CSize OCheckBox::GetAutoSize() const
@@ -614,24 +738,23 @@ OLink::OLink(OControlManager* manager)
     : OControl(manager)
 {
     m_hCursor = ::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND));
-
-    HFONT hFont = (HFONT)::SendMessage(m_pManager->GetWindow(), WM_GETFONT, 0, 0);
-    LOGFONT logFont;
-    ::GetObject(hFont, sizeof(logFont), &logFont);
-    logFont.lfUnderline = TRUE;
-    m_hLinkFont = ::CreateFontIndirect(&logFont);
+    m_hLinkFont = NULL;
 }
 
 void OLink::Draw(HDC hDc) const
 {
     DWORD dwColor = ::SetTextColor(hDc, RGB(0, 0, 255));
 
+    if(m_hLinkFont == NULL)
+        m_hLinkFont = OGdiObjManager::GetInst().GetLinkFont(__super::GetFont());
+
     __super::Draw(hDc);
 
     ::SetTextColor(hDc, dwColor);
 }
 
-HFONT OLink::GetFont() const
+void OLink::SetTextAttr(LPCTSTR szTextAttrTitle, BOOL bAutoSize)
 {
-    return m_hLinkFont;
+    __super::SetTextAttr(szTextAttrTitle, bAutoSize);
+    m_hLinkFont = OGdiObjManager::GetInst().GetLinkFont(__super::GetFont());
 }

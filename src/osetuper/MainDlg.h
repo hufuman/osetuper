@@ -8,7 +8,7 @@
 #include "OControlManager.h"
 #include "PageManager.h"
 #include "StringBundle.h"
-
+#include "SetupData.h"
 
 class CMainDlg : public BaseDlg<CMainDlg>, public CMessageFilter
 {
@@ -60,6 +60,11 @@ public:
             return TRUE;
         }
 
+        if(m_PageManager.HandleMsg(uMsg, wParam, lParam, lResult))
+        {
+            return TRUE;
+        }
+
         REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
 
@@ -91,13 +96,36 @@ public:
 
     LRESULT OnBtnFinish(UINT /*uCode*/, UINT /*uCommandId*/, HWND /*hWndControl*/, BOOL& /*bHandled*/)
     {
+        FinishSetup(CSetupData::GetInst().GetStart());
+
         DestroyWindow();
         return 0;
     }
     LRESULT OnBtnSysClose(UINT /*uCode*/, UINT /*uCommandId*/, HWND /*hWndControl*/, BOOL& /*bHandled*/)
     {
+        if(m_PageManager.GetCurPageIndex() == CPageManager::PageFinish)
+        {
+            FinishSetup(FALSE);
+        }
+        else
+        {
+            CString strMsg = CStringBundle::GetInst().Get(_T("TEXT_CONFIRM_QUIT"));
+            if(MsgBox(strMsg, MB_OKCANCEL | MB_ICONINFORMATION) != IDOK)
+                return 0;
+        }
         ::DestroyWindow(m_hWnd);
         return 0;
+    }
+
+    void FinishSetup(BOOL bStart)
+    {
+        CString strCmd = CStringBundle::GetInst().Get(bStart ? _T("COMMAND_START") : _T("COMMAND_NOT_START"));
+        if(!strCmd.IsEmpty())
+        {
+            CString strCommand = strCmd;
+            strCommand.Replace(_T("$INSTDIR"), CSetupData::GetInst().GetSetupDir());
+            ::ShellExecute(m_hWnd, _T("open"), strCommand, NULL, NULL, SW_SHOW);
+        }
     }
 
     LRESULT OnNcActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
@@ -153,11 +181,14 @@ public:
 
         CStringBundle::GetInst().Init();
         m_ControlManager.Init(m_hWnd);
-        SetWindowPos(NULL, 0, 0, 520, 340, SWP_NOMOVE | SWP_NOZORDER);
+        SetWindowPos(NULL, 0, 0, 450, 640, SWP_NOMOVE | SWP_NOZORDER);
 
-        m_PageManager.ShowPage(CPageManager::PageWelcome);
+        CString strTitle = CStringBundle::GetInst().Get(_T("TITLE"));
+        SetWindowText(strTitle);
 
         InitLayout();
+
+        m_PageManager.ShowPage(CPageManager::PageWelcome);
 
         CenterWindow();
 
@@ -174,10 +205,22 @@ public:
     // Layout
     void InitLayout()
     {
-        CRect rcMargin;
+        CRect rcTemp(0, 0, 0, 0);
+        m_ControlManager.CreateShape(RGB(45, 45, 45), ManagerLayout::HFill | ManagerLayout::VFill, rcTemp);
 
-        rcMargin.SetRect(2, 0, 0, 2);
-        m_ControlManager.CreateButton(_T("sysclosebutton"), IDC_BTN_SYS_CLOSE, ManagerLayout::Top | ManagerLayout::Right, 4, rcMargin);
+        OShape* tmpShape = m_ControlManager.CreateShape(RGB(34, 36, 33), ManagerLayout::HFill | ManagerLayout::Bottom, rcTemp);
+        rcTemp.bottom = 115;
+        tmpShape->SetRect(rcTemp);
+        tmpShape->AutoSize();
+
+        rcTemp.SetRect(CONTROL_LEFT, 100, 0, 0);
+        m_ControlManager.CreateImage(_T("Logo"), ManagerLayout::Top | ManagerLayout::Left, rcTemp);
+
+        rcTemp.SetRect(2, 0, 0, 2);
+        m_ControlManager.CreateButton(_T("sysclosebutton"), IDC_BTN_SYS_CLOSE, ManagerLayout::Top | ManagerLayout::Right, 4, rcTemp);
+
+        rcTemp.SetRect(0, 0, 0, 0);
+        m_ControlManager.CreateButton(_T("sysclosebutton"), IDC_BTN_SYS_CLOSE, ManagerLayout::Top | ManagerLayout::Right, 4, rcTemp);
     }
 
 private:

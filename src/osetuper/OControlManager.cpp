@@ -2,6 +2,7 @@
 #include "OControlManager.h"
 
 #include "Util.h"
+#include "StringBundle.h"
 
 OControlManager::OControlManager()
 {
@@ -37,6 +38,22 @@ BOOL OControlManager::HandleMsg(UINT message, WPARAM wParam, LPARAM lParam, LRES
     BOOL bResult = FALSE;
     switch(message)
     {
+    case WM_CTLCOLORSTATIC:
+    case WM_CTLCOLOREDIT:
+        {
+            ORealControl* pEdit = reinterpret_cast<ORealControl*>(::GetWindowLongPtr(reinterpret_cast<HWND>(lParam), GWLP_USERDATA));
+            if(pEdit != NULL)
+            {
+                HBRUSH hBrush = NULL;
+                hBrush = pEdit->OnCtlColor(reinterpret_cast<HDC>(wParam));
+                if(hBrush != NULL)
+                {
+                    lResult = reinterpret_cast<BOOL>(hBrush);
+                    return TRUE;
+                }
+            }
+            break;
+        }
     case WM_SIZE:
         {
             if(wParam == SIZE_MAXIMIZED || wParam == SIZE_RESTORED)
@@ -174,6 +191,16 @@ HWND OControlManager::GetWindow() const
     return m_hWnd;
 }
 
+OControl* OControlManager::CreateImage(LPCTSTR szResName, UINT uLayout, const CRect& rcMargin)
+{
+    OControl* control = new OControl(this);
+
+    m_vctControls.push_back(control);
+    control->Create(szResName, 0, uLayout, 1, rcMargin);
+
+    return control;
+}
+
 OButton* OControlManager::CreateButton(LPCTSTR szResName, UINT uButtonCommandId, UINT uLayout, int nImageCount, const CRect& rcMargin)
 {
     OButton* control = new OButton(this);
@@ -195,35 +222,35 @@ OShape* OControlManager::CreateShape(COLORREF color, UINT uLayout, const CRect& 
     return control;
 }
 
-OEdit* OControlManager::CreateEdit(LPCTSTR szTextAttr, UINT uLayout, const CRect& rcMargin)
+OEdit* OControlManager::CreateEdit(LPCTSTR szText, UINT uLayout, const CRect& rcMargin)
 {
     OEdit* control = new OEdit(this);
     m_vctControls.push_back(control);
 
     control->Create(NULL, 0, uLayout, 0, rcMargin);
-    control->SetTextAttr(szTextAttr, FALSE);
+    control->SetText(szText);
 
     return control;
 }
 
-OLink* OControlManager::CreateLink(LPCTSTR szTextAttr, UINT uLayout, const CRect& rcMargin)
+OLink* OControlManager::CreateLink(UINT uButtonCommandId, LPCTSTR szTextAttrTitle, UINT uLayout, const CRect& rcMargin)
 {
     OLink* control = new OLink(this);
     m_vctControls.push_back(control);
 
-    control->Create(NULL, 0, uLayout, 0, rcMargin);
-    control->SetTextAttr(szTextAttr, TRUE);
+    control->Create(NULL, uButtonCommandId, uLayout, 0, rcMargin);
+    control->SetTextAttr(szTextAttrTitle, TRUE);
 
     return control;
 }
 
-OLabel* OControlManager::CreateLabel(LPCTSTR szTextAttr, UINT uLayout, const CRect& rcMargin)
+OLabel* OControlManager::CreateLabel(LPCTSTR szTextAttrTitle, UINT uLayout, const CRect& rcMargin)
 {
     OLabel* control = new OLabel(this);
     m_vctControls.push_back(control);
 
     control->Create(NULL, 0, uLayout, 0, rcMargin);
-    control->SetTextAttr(szTextAttr, TRUE);
+    control->SetTextAttr(szTextAttrTitle, TRUE);
 
     return control;
 }

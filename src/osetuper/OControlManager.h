@@ -31,12 +31,13 @@ public:
 
     HWND GetWindow() const;
 
+    OControl*   CreateImage(LPCTSTR szResName, UINT uLayout, const CRect& rcMargin);
     OButton*    CreateButton(LPCTSTR szResName, UINT uButtonCommandId, UINT uLayout, int nImageCount, const CRect& rcMargin);
 
     OShape*     CreateShape(COLORREF color, UINT uLayout, const CRect& rcMargin);
-    OEdit*      CreateEdit(LPCTSTR szTextAttr, UINT uLayout, const CRect& rcMargin);
-    OLink*      CreateLink(LPCTSTR szTextAttr, UINT uLayout, const CRect& rcMargin);
-    OLabel*     CreateLabel(LPCTSTR szTextAttr, UINT uLayout, const CRect& rcMargin);
+    OEdit*      CreateEdit(LPCTSTR szTextAttrTitle, UINT uLayout, const CRect& rcMargin);
+    OLink*      CreateLink(UINT uButtonCommandId, LPCTSTR szTextAttrTitle, UINT uLayout, const CRect& rcMargin);
+    OLabel*     CreateLabel(LPCTSTR szTextAttrTitle, UINT uLayout, const CRect& rcMargin);
     OCheckBox*  CreateCheckBox(LPCTSTR szResName, UINT uButtonCommandId, UINT uLayout, const CRect& rcMargin);
 
 public:

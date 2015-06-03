@@ -19,6 +19,7 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+#include <time.h>
 
 #include <atlstr.h>
 #include <atlbase.h>

@@ -3,6 +3,7 @@
 
 
 #include "WelcomePage.h"
+#include "CustomPage.h"
 #include "InstallPage.h"
 #include "FinishPage.h"
 
@@ -56,6 +57,24 @@ void CPageManager::NextPage()
     ShowPage((CPageManager::PageIndex)(m_pLastPage->index + 1));
 }
 
+BOOL CPageManager::HandleMsg(UINT message, WPARAM wParam, LPARAM lParam, LRESULT& lResult)
+{
+    UNREFERENCED_PARAMETER(lResult);
+    UNREFERENCED_PARAMETER(lParam);
+    if(m_pLastPage == NULL)
+        return FALSE;
+    if(message != WM_COMMAND || HIWORD(wParam) != BN_CLICKED)
+        return FALSE;
+    return m_pLastPage->pPage->OnCommand(LOWORD(wParam));
+}
+
+CPageManager::PageIndex CPageManager::GetCurPageIndex() const
+{
+    if(m_pLastPage == NULL)
+        return PageWelcome;
+    return m_pLastPage->index;
+}
+
 CPageManager::PageInfo* CPageManager::GetPageByIndex(PageIndex index)
 {
     size_t count = m_arrPages.size();
@@ -80,9 +99,12 @@ CPageManager::PageInfo* CPageManager::CreatePage(PageIndex index)
     case PageWelcome:
         page->pPage = new CWelcomePage(m_pControlManager);
         break;
-    case PageInstall:
-        page->pPage = new CInstallPage(m_pControlManager);
+    case PageCustom:
+        page->pPage = new CCustomPage(m_pControlManager);
         break;
+    case PageInstall:
+        // page->pPage = new CInstallPage(m_pControlManager);
+        // break;
     case PageFinish:
         page->pPage = new CFinishPage(m_pControlManager);
         break;

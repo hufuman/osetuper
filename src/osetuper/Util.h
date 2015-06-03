@@ -18,4 +18,16 @@ namespace Util
     BOOL IsRectsOverlapped(const RECT* pOne, const RECT* pAnother);
 
     BOOL IsKeyPressed(UINT virtualKey);
+
+    CString AppendPath(LPCTSTR szSrc, LPCTSTR szMore);
+
+    int GetTextHeight(HWND hWnd, HFONT hFont);
+
+    CString BrowseForFolder(HWND hWnd, LPCTSTR szTitle, LPCTSTR szInitDir);
+
+    BOOL IsDirExists(LPCTSTR szPath);
+    CString RemovePath(LPCTSTR szSrcPath);
+    CString MakeSureEndWith(LPCTSTR szSrcPath, LPCTSTR szEnd);
+    DWORD GetSelfSize();
+    BOOL MakeDirs(LPCTSTR szPath);
 }

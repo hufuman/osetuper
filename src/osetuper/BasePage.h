@@ -2,7 +2,10 @@
 
 
 #include "OControlManager.h"
+#include "resource.h"
 
+
+#define CONTROL_LEFT 60
 
 class CBasePage
 {
@@ -20,6 +23,11 @@ public:
 public:
     virtual void Create() = 0;
 
+    virtual BOOL OnCommand(WORD command)
+    {
+        UNREFERENCED_PARAMETER(command);
+        return FALSE;
+    }
 
     virtual void Destroy()
     {
