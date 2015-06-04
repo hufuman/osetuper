@@ -177,8 +177,6 @@ public:
 		CMessageLoop* pLoop = _Module.GetMessageLoop();
 		pLoop->AddMessageFilter(this);
 
-        m_strAppName.LoadString(IDS_APP_NAME);
-
         CStringBundle::GetInst().Init();
         m_ControlManager.Init(m_hWnd);
         SetWindowPos(NULL, 0, 0, 450, 640, SWP_NOMOVE | SWP_NOZORDER);
@@ -224,8 +222,6 @@ public:
     }
 
 private:
-    CString         m_strAppName;
-
     CPageManager    m_PageManager;
     OControlManager m_ControlManager;
 };

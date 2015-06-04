@@ -1,5 +1,6 @@
 #pragma once
 
+#include "StringBundle.h"
 
 template < typename T >
 class BaseDlg : public CDialogImpl<T>
@@ -7,7 +8,7 @@ class BaseDlg : public CDialogImpl<T>
 public:
     BaseDlg()
     {
-        m_strAppName.LoadString(IDS_APP_NAME);
+        m_strAppName = CStringBundle::GetInst().Get(_T("TITLE"));
     }
     ~BaseDlg()
     {
