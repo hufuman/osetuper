@@ -14,7 +14,8 @@ namespace Util
     HBITMAP LoadImage(LPCTSTR szImagePath);
     HBITMAP LoadImageFromExeRes(LPCTSTR szResName);
 
-    BOOL InitGdiplus();
+    ULONG_PTR InitGdiplus();
+    void CleanGdiplus(ULONG_PTR uToken);
     BOOL IsRectsOverlapped(const RECT* pOne, const RECT* pAnother);
 
     BOOL IsKeyPressed(UINT virtualKey);

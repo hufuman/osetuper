@@ -58,12 +58,13 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
     ::InitCommonControls();
 #endif
 
-    Util::InitGdiplus();
+    ULONG_PTR uToken = Util::InitGdiplus();
 
     _Module.Init(NULL, hInstance);
 
     int nRet = Run(lpCmdLine, nCmdShow);
 
     _Module.Term();
+    Util::CleanGdiplus(uToken);
     return nRet;
 }

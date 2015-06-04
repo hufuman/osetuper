@@ -10,6 +10,7 @@ XStreamImpl::XStreamImpl()
     CreateStreamOnHGlobal(NULL, TRUE, &m_pStream);
 #endif // TEST_STREAM
 
+    m_uRef = 1;
     m_pData = NULL;
     m_uLength = 0;
     m_dwCurPos = 0;

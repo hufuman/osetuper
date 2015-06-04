@@ -236,12 +236,20 @@ namespace Util
         return hResult;
     }
 
-    BOOL InitGdiplus()
+    ULONG_PTR InitGdiplus()
     {
         ULONG_PTR token;
         Gdiplus::GdiplusStartupInput input;
         Gdiplus::Status status = Gdiplus::GdiplusStartup(&token, &input, NULL);
-        return (status == Gdiplus::Ok);
+        if(status == Gdiplus::Ok)
+            return token;
+        else
+            return 0;
+    }
+
+    void CleanGdiplus(ULONG_PTR uToken)
+    {
+        Gdiplus::GdiplusShutdown(uToken);
     }
 
     BOOL IsRectsOverlapped(const RECT* pOne, const RECT* pAnother)
