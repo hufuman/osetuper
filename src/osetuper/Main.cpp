@@ -15,7 +15,6 @@
 
 #include "Util.h"
 #include "resource.h"
-#include "WndLayout.h"
 #include "LinkStatic.h"
 #include "BaseDlg.h"
 #include "MainDlg.h"

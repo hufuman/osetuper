@@ -6,6 +6,15 @@
 #include "StringBundle.h"
 
 
+/*
+    wParam:
+        0 - error
+        1 - finish
+    lParam:
+        error: 0 - release file error
+        error: 1 - create process error
+*/
+const UINT g_uNotifyMsg = ::RegisterWindowMessage(_T("OSETUPER_NOTIFY_MSG"));
 
 CSetupWorker::CSetupWorker(void)
 {
@@ -27,6 +36,8 @@ void CSetupWorker::Start(ISetupStatusListener* listener, LPCTSTR szSetupPath)
 
     InitMsgWnd();
 
+    m_pListener->OnProgressChanged(0);
+    m_pListener->OnProgressTextChanged(_T("正在释放安装文件..."));
     m_hThread = reinterpret_cast<HANDLE>(_beginthreadex(0, 0, &CSetupWorker::ThreadProc, reinterpret_cast<void*>(this), 0, 0));
 }
 
@@ -76,17 +87,43 @@ LRESULT CSetupWorker::MsgWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
             }
         }
     }
+    else if(g_uNotifyMsg == message)
+    {
+        CSetupWorker* pThis = reinterpret_cast<CSetupWorker*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
+        if(pThis == NULL)
+            return 0;
+        switch(wParam)
+        {
+        case 0:
+            {
+                // Error
+                if(lParam == 0)
+                {
+                    pThis->m_pListener->OnError(CStringBundle::GetInst().Get(_T("ERR_REALSE_FILE")));
+                }
+                else if(lParam == 1)
+                {
+                    pThis->m_pListener->OnError(CStringBundle::GetInst().Get(_T("ERR_CREATE_PROCESS")));
+                }
+                break;
+            }
+        case 1:
+            {
+                pThis->m_pListener->OnFinish();
+                break;
+            }
+        }
+    }
+
     return ::DefWindowProc(hWnd, message, wParam, lParam);
 }
 
 void CSetupWorker::OnThread()
 {
-    m_pListener->OnProgressChanged(0);
-    m_pListener->OnProgressTextChanged(_T("正在释放安装文件..."));
     CString strExePath = ReleaseFile();
     if(strExePath.IsEmpty())
     {
-        m_pListener->OnError(CStringBundle::GetInst().Get(_T("ERR_REALSE_FILE")));
+        ::PostMessage(m_hMsgWnd, g_uNotifyMsg, 0, 0);
         return;
     }
     if(m_bStop)
@@ -97,7 +134,7 @@ void CSetupWorker::OnThread()
     STARTUPINFO si = {sizeof(STARTUPINFO)};
     if(!::CreateProcess(NULL, strCommand.GetBuffer(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
     {
-        m_pListener->OnError(CStringBundle::GetInst().Get(_T("ERR_CREATE_PROCESS")));
+        ::PostMessage(m_hMsgWnd, g_uNotifyMsg, 0, 1);
         return;
     }
     for(;!m_bStop;)
@@ -107,7 +144,7 @@ void CSetupWorker::OnThread()
             break;
     }
     ::DeleteFile(strExePath);
-    m_pListener->OnFinish();
+    ::PostMessage(m_hMsgWnd, g_uNotifyMsg, 1, 0);
 }
 
 void CSetupWorker::InitMsgWnd()

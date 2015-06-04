@@ -103,8 +103,8 @@ CPageManager::PageInfo* CPageManager::CreatePage(PageIndex index)
         page->pPage = new CCustomPage(m_pControlManager);
         break;
     case PageInstall:
-        // page->pPage = new CInstallPage(m_pControlManager);
-        // break;
+        page->pPage = new CInstallPage(m_pControlManager);
+        break;
     case PageFinish:
         page->pPage = new CFinishPage(m_pControlManager);
         break;
