@@ -23,7 +23,7 @@ void CCustomPage::Create()
     CRect rcTemp;
 
     // Title
-    rcTemp.SetRect(CONTROL_LEFT, 200, 0, 0);
+    rcTemp.SetRect(CONTROL_LEFT, 250, 0, 0);
     m_pTitle = m_pControlManager->CreateLabel(_T("CUSTOM_TITLE"), ManagerLayout::Top | ManagerLayout::Left, rcTemp);
     AddControl(m_pTitle);
 
@@ -33,7 +33,7 @@ void CCustomPage::Create()
     CString strInstDir = Util::AppendPath(szTemp, _T("Soya"));
 
     // Edit
-    rcTemp.SetRect(CONTROL_LEFT, 225, CONTROL_LEFT, 0);
+    rcTemp.SetRect(CONTROL_LEFT, 275, CONTROL_LEFT, 0);
     m_pPath = m_pControlManager->CreateEdit(strInstDir, ManagerLayout::Top | ManagerLayout::HFill, rcTemp);
     m_pPath->SetRect(rcTemp);
     m_pPath->SetBackColor(RGB(53, 52, 70));
@@ -42,7 +42,7 @@ void CCustomPage::Create()
     CSetupData::GetInst().SetSetupDir(strInstDir);
 
     // Browse
-    rcTemp.SetRect(0, 225, 0, 0);
+    rcTemp.SetRect(0, 275, 0, 0);
     OButton* pBtnBrowse = m_pControlManager->CreateButton(_T("pushbutton"), IDC_BTN_BROWSE, ManagerLayout::Right | ManagerLayout::Top, 4, rcTemp);
     pBtnBrowse->SetTextAttr(_T("BTN_BROWSE"), FALSE);
     rcTemp = pBtnBrowse->GetRect();
@@ -53,13 +53,13 @@ void CCustomPage::Create()
     AddControl(pBtnBrowse);
 
     // Agree
-    rcTemp.SetRect(CONTROL_LEFT, 300, 0, 0);
-    OCheckBox* pChkAgree = m_pControlManager->CreateCheckBox(_T("checkbox"), IDC_BTN_AGREE, ManagerLayout::Left | ManagerLayout::Top, rcTemp);
-    pChkAgree->SetTextAttr(_T("BTN_AGREE"), TRUE);
-    AddControl(pChkAgree);
+    rcTemp.SetRect(CONTROL_LEFT, 350, 0, 0);
+    m_pChkAgree = m_pControlManager->CreateCheckBox(_T("checkbox"), IDC_BTN_AGREE, ManagerLayout::Left | ManagerLayout::Top, rcTemp);
+    m_pChkAgree->SetTextAttr(_T("BTN_AGREE"), TRUE);
+    AddControl(m_pChkAgree);
 
     // License
-    rcTemp.SetRect(CONTROL_LEFT + pChkAgree->GetRect().Width() + 2, 300 + 4, 0, 0);
+    rcTemp.SetRect(CONTROL_LEFT + m_pChkAgree->GetRect().Width() + 2, 350 + 4, 0, 0);
     OLink* pLinkAgree = m_pControlManager->CreateLink(IDC_LINK_LICENSE, _T("LINK_LICENSE"), ManagerLayout::Left | ManagerLayout::Top, rcTemp);
     AddControl(pLinkAgree);
 
@@ -90,4 +90,13 @@ BOOL CCustomPage::OnCommand(WORD command)
         }
     }
     return true;
+}
+
+bool CCustomPage::CanShowNext() const
+{
+    if(m_pChkAgree->IsChecked())
+        return true;
+    CString strText = CStringBundle::GetInst().Get(_T("ERR_NOT_AGREE"));
+    ::MessageBox(m_pControlManager->GetWindow(), strText, CStringBundle::GetInst().Get(_T("TITLE")), MB_OK | MB_ICONWARNING);
+    return false;
 }

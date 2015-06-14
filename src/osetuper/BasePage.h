@@ -5,7 +5,7 @@
 #include "resource.h"
 
 
-#define CONTROL_LEFT 60
+#define CONTROL_LEFT 35
 
 class CBasePage
 {
@@ -42,6 +42,11 @@ public:
             OControl* page = m_arrControls[i];
             page->SetVisible(bShow);
         }
+    }
+
+    virtual bool CanShowNext() const
+    {
+        return true;
     }
 
 protected:

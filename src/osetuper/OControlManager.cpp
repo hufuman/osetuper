@@ -193,7 +193,7 @@ HWND OControlManager::GetWindow() const
 
 OControl* OControlManager::CreateImage(LPCTSTR szResName, UINT uLayout, const CRect& rcMargin)
 {
-    OControl* control = new OControl(this);
+    OControl* control = new OImage(this);
 
     m_vctControls.push_back(control);
     control->Create(szResName, 0, uLayout, 1, rcMargin);

@@ -83,6 +83,7 @@ OControl::OControl(OControlManager* manager)
     m_hCursor = NULL;
     m_bVisible = TRUE;
     m_hFont = OGdiObjManager::GetInst().GetFont(14, false);
+    m_bMultipleLine = false;
 
     m_clrText = RGB(255, 255, 255);
     m_clrTextHover = m_clrText;
@@ -158,6 +159,11 @@ ControlStatus::Status OControl::GetStatus() const
 HFONT OControl::GetFont() const
 {
     return m_hFont;
+}
+
+void OControl::SetMultiLine(bool multipleLine)
+{
+    m_bMultipleLine = multipleLine;
 }
 
 void OControl::SetVisible(BOOL bVisible)
@@ -468,12 +474,19 @@ void OControl::OnCreate()
 
 DWORD OControl::GetDrawTextFlag() const
 {
-    DWORD dwResult = DT_SINGLELINE | DT_END_ELLIPSIS;
-    if(m_uTextAlign & TextAlign::AlignCenter)
-        dwResult |= DT_CENTER;
-    if(m_uTextAlign & TextAlign::AlignVCenter)
-        dwResult |= DT_VCENTER;
-    return dwResult;
+    if(m_bMultipleLine)
+    {
+        return DT_EDITCONTROL | DT_WORDBREAK | DT_EXPANDTABS;
+    }
+    else
+    {
+        DWORD dwResult = DT_SINGLELINE | DT_END_ELLIPSIS | DT_EXPANDTABS;
+        if(m_uTextAlign & TextAlign::AlignCenter)
+            dwResult |= DT_CENTER;
+        if(m_uTextAlign & TextAlign::AlignVCenter)
+            dwResult |= DT_VCENTER;
+        return dwResult;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -488,6 +501,11 @@ OImage::OImage(OControlManager* manager)
 : OControl(manager)
 {
     ;
+}
+
+BOOL OImage::NeedHover() const
+{
+    return FALSE;
 }
 
 //////////////////////////////////////////////////////////////////////////

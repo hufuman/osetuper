@@ -96,6 +96,7 @@ public:
 
     LRESULT OnBtnFinish(UINT /*uCode*/, UINT /*uCommandId*/, HWND /*hWndControl*/, BOOL& /*bHandled*/)
     {
+        m_PageManager.ShowPage(CPageManager::PageFinish);
         FinishSetup(CSetupData::GetInst().GetStart());
 
         DestroyWindow();
@@ -124,7 +125,9 @@ public:
         {
             CString strCommand = strCmd;
             strCommand.Replace(_T("$INSTDIR"), CSetupData::GetInst().GetSetupDir());
-            ::ShellExecute(m_hWnd, _T("open"), strCommand, NULL, NULL, SW_SHOW);
+            PROCESS_INFORMATION pi;
+            STARTUPINFO si = {sizeof(STARTUPINFO)};
+            ::CreateProcess(NULL, strCommand.GetBuffer(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
         }
     }
 
@@ -211,8 +214,8 @@ public:
         tmpShape->SetRect(rcTemp);
         tmpShape->AutoSize();
 
-        rcTemp.SetRect(CONTROL_LEFT, 100, 0, 0);
-        m_ControlManager.CreateImage(_T("Logo"), ManagerLayout::Top | ManagerLayout::Left, rcTemp);
+        rcTemp.SetRect(0, 100, 0, 0);
+        m_ControlManager.CreateImage(_T("Logo"), ManagerLayout::Top | ManagerLayout::HCenter, rcTemp);
 
         rcTemp.SetRect(2, 0, 0, 2);
         m_ControlManager.CreateButton(_T("sysclosebutton"), IDC_BTN_SYS_CLOSE, ManagerLayout::Top | ManagerLayout::Right, 4, rcTemp);

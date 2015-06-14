@@ -291,6 +291,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\resource\Logo.png"
+				>
+			</File>
+			<File
 				RelativePath=".\osetuper.ico"
 				>
 			</File>
@@ -396,6 +400,30 @@
 			</File>
 			<File
 				RelativePath=".\SetupWorker.h"
+				>
+			</File>
+			<File
+				RelativePath=".\strconv.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\strconv.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SysInfo.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SysInfo.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XRegUtil.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\XRegUtil.h"
 				>
 			</File>
 		</Filter>

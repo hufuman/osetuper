@@ -19,21 +19,21 @@ CInstallPage::~CInstallPage(void)
 
 void CInstallPage::Create()
 {
-    CRect rcTemp(CONTROL_LEFT, 200, CONTROL_LEFT, 0);
+    CRect rcTemp(CONTROL_LEFT, 250, CONTROL_LEFT, 0);
     m_pText = m_pControlManager->CreateLabel(_T("TEXT_PREINST"), ManagerLayout::HFill | ManagerLayout::Top, rcTemp);
     m_pText->SetTextAlign(TextAlign::AlignVCenter);
     AddControl(m_pText);
     m_pText->SetAutoSize(FALSE);
     m_strText = m_pText->GetText();
 
-    rcTemp.SetRect(CONTROL_LEFT, 225, CONTROL_LEFT, 0);
+    rcTemp.SetRect(CONTROL_LEFT, 275, CONTROL_LEFT, 0);
     m_pProgressBack = m_pControlManager->CreateShape(RGB(19, 76, 112), ManagerLayout::HFill | ManagerLayout::Top, rcTemp);
     AddControl(m_pProgressBack);
     rcTemp = m_pProgressBack->GetRect();
     rcTemp.bottom = rcTemp.top + 10;
     m_pProgressBack->SetRect(rcTemp);
 
-    rcTemp.SetRect(CONTROL_LEFT, 225, CONTROL_LEFT, 0);
+    rcTemp.SetRect(CONTROL_LEFT, 275, CONTROL_LEFT, 0);
     m_pProgressFore = m_pControlManager->CreateShape(RGB(0, 149, 249), ManagerLayout::Left | ManagerLayout::Top, rcTemp);
     AddControl(m_pProgressFore);
     rcTemp = m_pProgressFore->GetRect();

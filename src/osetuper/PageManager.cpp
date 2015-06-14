@@ -54,7 +54,8 @@ void CPageManager::NextPage()
 {
     if(m_pLastPage->index == PageFinish)
         return;
-    ShowPage((CPageManager::PageIndex)(m_pLastPage->index + 1));
+    if(m_pLastPage->pPage->CanShowNext())
+        ShowPage((CPageManager::PageIndex)(m_pLastPage->index + 1));
 }
 
 BOOL CPageManager::HandleMsg(UINT message, WPARAM wParam, LPARAM lParam, LRESULT& lResult)

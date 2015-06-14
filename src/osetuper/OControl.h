@@ -42,6 +42,7 @@ public:
     BOOL GetDown() const;
     ControlStatus::Status GetStatus() const;
     virtual HFONT GetFont() const;
+    void SetMultiLine(bool multipleLine);
 
     virtual void SetVisible(BOOL bVisible);
     void SetHover(BOOL bHover, const CPoint& pt);
@@ -91,6 +92,7 @@ protected:
     BOOL    m_bVisible;
     HFONT   m_hFont;
     UINT    m_uTextAlign;
+    BOOL    m_bMultipleLine;
 
     UINT    m_uCommandId;
     OControlManager* m_pManager;
@@ -113,6 +115,8 @@ class OImage : public OControl
 {
 public:
     OImage(OControlManager* manager);
+
+    virtual BOOL NeedHover() const;
 };
 
 
