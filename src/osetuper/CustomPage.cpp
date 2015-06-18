@@ -33,7 +33,7 @@ void CCustomPage::Create()
     CString strInstDir = Util::AppendPath(szTemp, _T("Soya"));
 
     // Edit
-    rcTemp.SetRect(CONTROL_LEFT, 275, CONTROL_LEFT, 0);
+    rcTemp.SetRect(CONTROL_LEFT, 275, 60, 0);
     m_pPath = m_pControlManager->CreateEdit(strInstDir, ManagerLayout::Top | ManagerLayout::HFill, rcTemp);
     m_pPath->SetRect(rcTemp);
     m_pPath->SetBackColor(RGB(53, 52, 70));

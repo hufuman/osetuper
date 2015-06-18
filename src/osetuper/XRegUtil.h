@@ -23,7 +23,10 @@ public:
     bool GetValue(const wchar_t* const name, std::wstring& strValue);
     bool SetValue(const wchar_t* const name, const wchar_t* const value);
 
+    bool GetValue(const wchar_t* const name, int& nValue);
+
     static bool GetStringValue(HKEY hKey, LPCTSTR szSubPath, LPCTSTR szValueName, std::wstring& value);
+    static bool GetIntValue(HKEY hKey, LPCTSTR szSubPath, LPCTSTR szValueName, int& value);
 private:
     HKEY    m_hKey;
 };

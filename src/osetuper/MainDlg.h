@@ -214,7 +214,7 @@ public:
         tmpShape->SetRect(rcTemp);
         tmpShape->AutoSize();
 
-        rcTemp.SetRect(0, 100, 0, 0);
+        rcTemp.SetRect(0, 60, 0, 0);
         m_ControlManager.CreateImage(_T("Logo"), ManagerLayout::Top | ManagerLayout::HCenter, rcTemp);
 
         rcTemp.SetRect(2, 0, 0, 2);

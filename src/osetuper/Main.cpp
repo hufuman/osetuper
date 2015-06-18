@@ -18,6 +18,7 @@
 #include "LinkStatic.h"
 #include "BaseDlg.h"
 #include "MainDlg.h"
+#include "CrashDaemon.h"
 
 
 CAppModule _Module;
@@ -47,6 +48,14 @@ int Run(LPTSTR /*lpCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
     return nRet;
 }
 
+
+void WeAreCrashed(IN LPCTSTR szFilePath)
+{
+    CString strMsg;
+    strMsg.Format(_T("Woops, I'm crashed, send file %s to developer please"), szFilePath);
+    ::MessageBox(NULL, strMsg, _T("Crash Tip"), MB_OK | MB_ICONERROR);
+}
+
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpCmdLine, int nCmdShow)
 {
 #if (_WIN32_IE >= 0x0300)
@@ -57,6 +66,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 #else
     ::InitCommonControls();
 #endif
+
+    CrashDaemon::StartCrashClient(NULL, WeAreCrashed);
 
     ULONG_PTR uToken = Util::InitGdiplus();
 

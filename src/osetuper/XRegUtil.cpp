@@ -29,7 +29,7 @@ bool CRegUtil::Open(HKEY hParentKey, const wchar_t * const path, RegMode mode)
         sam = KEY_READ | KEY_WRITE;
         break;
     }
-    LONG lResult = ::RegCreateKeyEx(hParentKey, path, 0, 0, 0, sam, 0, &m_hKey, 0);
+    LONG lResult = ::RegCreateKeyEx(hParentKey, path, 0, 0, 0, sam | KEY_WOW64_64KEY, 0, &m_hKey, 0);
     bool bResult = (lResult == ERROR_SUCCESS && m_hKey != NULL);
     return bResult;
 }
@@ -77,7 +77,24 @@ bool CRegUtil::GetValue(const wchar_t* const name, std::wstring& strValue)
 }
 
 
+bool CRegUtil::GetValue(const wchar_t* const name, int& nValue)
+{
+    DWORD dwLength = sizeof(nValue);
+    DWORD dwType = REG_DWORD;
+    LONG lResult = ::RegQueryValueEx(m_hKey, name, 0, &dwType, (LPBYTE)&nValue, &dwLength);
+    return lResult == ERROR_SUCCESS;
+}
+
+
 bool CRegUtil::GetStringValue(HKEY hKey, LPCTSTR szSubPath, LPCTSTR szValueName, std::wstring& value)
+{
+    CRegUtil reg;
+    if (!reg.Open(hKey, szSubPath, RM_ReadOnly))
+        return false;
+    return reg.GetValue(szValueName, value);
+}
+
+bool CRegUtil::GetIntValue(HKEY hKey, LPCTSTR szSubPath, LPCTSTR szValueName, int& value)
 {
     CRegUtil reg;
     if (!reg.Open(hKey, szSubPath, RM_ReadOnly))

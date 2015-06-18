@@ -387,6 +387,14 @@
 			Name="SetupLogic"
 			>
 			<File
+				RelativePath=".\CrashDaemon.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CrashDaemon.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SetupData.cpp"
 				>
 			</File>

@@ -300,6 +300,20 @@ bool CSysInfo::GetCpuInfoImpl(stCpuInfo& cpuInfo)
 
 bool CSysInfo::GetVideoCardInfosImpl(std::vector<CVideoCardInfo>& vctVideoCards)
 {
+    CVideoCardInfo cardInfo;
+    cardInfo.dwMemSize = 0;
+    CRegUtil::GetStringValue(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winsat"), _T("PrimaryAdapterString"), cardInfo.strName);
+    int nSize;
+    CRegUtil::GetIntValue(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winsat"), _T("VideoMemorySize"), nSize);
+    if(nSize > 0)
+        cardInfo.dwMemSize = nSize / 1024 / 1024;
+    vctVideoCards.push_back(cardInfo);
+    return !cardInfo.strName.empty();
+}
+
+/*
+bool CSysInfo::GetVideoCardInfosImpl(std::vector<CVideoCardInfo>& vctVideoCards)
+{
     IWbemLocator* spLoc = NULL;
     IWbemServices* spServices = NULL;
     IWbemClassObject* spInstance = NULL;
@@ -370,3 +384,4 @@ bool CSysInfo::GetVideoCardInfosImpl(std::vector<CVideoCardInfo>& vctVideoCards)
         spEnumInst->Release();
     return result;
 }
+*/
