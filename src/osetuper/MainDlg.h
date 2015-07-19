@@ -180,9 +180,8 @@ public:
 		CMessageLoop* pLoop = _Module.GetMessageLoop();
 		pLoop->AddMessageFilter(this);
 
-        CStringBundle::GetInst().Init();
         m_ControlManager.Init(m_hWnd);
-        SetWindowPos(NULL, 0, 0, 450, 640, SWP_NOMOVE | SWP_NOZORDER);
+        SetWindowPos(NULL, 0, 0, 600, 380, SWP_NOMOVE | SWP_NOZORDER);
 
         CString strTitle = CStringBundle::GetInst().Get(_T("TITLE"));
         SetWindowText(strTitle);
@@ -207,12 +206,10 @@ public:
     void InitLayout()
     {
         CRect rcTemp(0, 0, 0, 0);
-        m_ControlManager.CreateShape(RGB(45, 45, 45), ManagerLayout::HFill | ManagerLayout::VFill, rcTemp);
+        m_ControlManager.CreateShape(RGB(58, 111, 153), ManagerLayout::HFill | ManagerLayout::VFill, rcTemp);
 
-        OShape* tmpShape = m_ControlManager.CreateShape(RGB(34, 36, 33), ManagerLayout::HFill | ManagerLayout::Bottom, rcTemp);
-        rcTemp.bottom = 115;
-        tmpShape->SetRect(rcTemp);
-        tmpShape->AutoSize();
+        rcTemp.SetRect(1, 1, 1, 1);
+        m_ControlManager.CreateShape(RGB(255, 255, 255), ManagerLayout::HFill | ManagerLayout::VFill, rcTemp);
 
         rcTemp.SetRect(0, 60, 0, 0);
         m_ControlManager.CreateImage(_T("Logo"), ManagerLayout::Top | ManagerLayout::HCenter, rcTemp);

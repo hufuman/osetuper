@@ -87,6 +87,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy /y F:\VCProjects\osetuper\Bin\Debug\osetuper.exe /b + F:\VCProjects\osetuper\Bin\Debug\test_setuper.exe /b F:\VCProjects\osetuper\Bin\Debug\test.exe /b"
 			/>
 		</Configuration>
 		<Configuration
@@ -283,7 +284,15 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
+				RelativePath=".\resource\btnInstall.png"
+				>
+			</File>
+			<File
 				RelativePath=".\resource\checkbox.png"
+				>
+			</File>
+			<File
+				RelativePath=".\resource\folder.png"
 				>
 			</File>
 			<File

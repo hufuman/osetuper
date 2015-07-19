@@ -12,5 +12,6 @@ public:
 
 public:
     virtual void Create();
+    CString GetSysInfo() const;
 
 };

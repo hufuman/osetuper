@@ -85,7 +85,7 @@ OControl::OControl(OControlManager* manager)
     m_hFont = OGdiObjManager::GetInst().GetFont(14, false);
     m_bMultipleLine = false;
 
-    m_clrText = RGB(255, 255, 255);
+    m_clrText = RGB(0, 0, 0);
     m_clrTextHover = m_clrText;
     m_uTextAlign = TextAlign::AlignCenter | TextAlign::AlignVCenter;
     m_bAutoSize = TRUE;
@@ -657,26 +657,14 @@ void OEdit::OnCreate()
     m_hWndEdit = ::CreateWindowEx(0,
         WC_EDIT,
         m_strText,
-        WS_TABSTOP | ES_AUTOHSCROLL | ES_AUTOVSCROLL | WS_VISIBLE | WS_CHILD,
+        WS_TABSTOP | ES_AUTOHSCROLL | ES_AUTOVSCROLL | WS_VISIBLE | WS_CHILD | WS_BORDER,
         m_Rect.left, m_Rect.top,
-        m_Rect.Width(), m_Rect.Height(),
+        m_Rect.Width(), m_Rect.Height() - 3,
         m_pManager->GetWindow(),
         NULL, ::GetModuleHandle(NULL), 0);
     HFONT hFont = (HFONT)::SendMessage(m_pManager->GetWindow(), WM_GETFONT, 0, 0);
     ::SendMessage(m_hWndEdit, WM_SETFONT, (WPARAM)hFont, 0);
     ::SetWindowLongPtr(m_hWndEdit, GWLP_USERDATA, (LONG)this);
-
-    // text VCenter
-    CRect rcTemp;
-    ::GetClientRect(m_hWndEdit, &rcTemp);
-    HDC hDc = GetDC(m_hWndEdit);
-    TEXTMETRIC tm;
-    ::GetTextMetrics(hDc, &tm);
-    int nFontHeight = tm.tmHeight + tm.tmExternalLeading;
-    int nMargin = (rcTemp.Height() - nFontHeight) / 2;
-    rcTemp.DeflateRect(0,nMargin);
-    ::SendMessage(m_hWndEdit, EM_SETRECTNP, 0, (LPARAM)&rcTemp);
-    ReleaseDC(m_hWndEdit, hDc) ;
 }
 
 //////////////////////////////////////////////////////////////////////////

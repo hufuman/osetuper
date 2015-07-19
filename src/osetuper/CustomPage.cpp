@@ -22,52 +22,49 @@ void CCustomPage::Create()
 {
     CRect rcTemp;
 
-    // Title
-    rcTemp.SetRect(CONTROL_LEFT, 250, 0, 0);
-    m_pTitle = m_pControlManager->CreateLabel(_T("CUSTOM_TITLE"), ManagerLayout::Top | ManagerLayout::Left, rcTemp);
-    AddControl(m_pTitle);
+    // Next
+    rcTemp.SetRect(0, 260, 0, 0);
+    OButton* pBtn = m_pControlManager->CreateButton(_T("BtnInstall"), IDC_BTN_NEXT_PAGE, ManagerLayout::HCenter | ManagerLayout::Top, 3, rcTemp);
+    pBtn->SetMinSize(132, 46);
+    pBtn->SetTextAttr(_T("BTN_INSTALL"), FALSE);
+    AddControl(pBtn);
+
+    // bottom rect
+    rcTemp.SetRect(1, 310, 1, 1);
+    AddControl(m_pControlManager->CreateShape(RGB(248, 248, 248), ManagerLayout::HFill | ManagerLayout::VFill, rcTemp));
+
+    rcTemp.SetRect(1, 312, 1, 67);
+    AddControl(m_pControlManager->CreateShape(RGB(237, 237, 237), ManagerLayout::HFill | ManagerLayout::VFill, rcTemp));
+
+    // Browse
+    rcTemp.SetRect(6, 320, 0, 0);
+    OButton* pBtnBrowse = m_pControlManager->CreateButton(_T("FOLDER"), IDC_BTN_BROWSE, ManagerLayout::Left | ManagerLayout::Top, 3, rcTemp);
+    AddControl(pBtnBrowse);
 
     // Path
     TCHAR szTemp[MAX_PATH + 1];
     ::SHGetSpecialFolderPath(m_pControlManager->GetWindow(), szTemp, CSIDL_PROGRAM_FILES, FALSE);
     CString strInstDir = Util::AppendPath(szTemp, _T("Soya"));
 
-    // Edit
-    rcTemp.SetRect(CONTROL_LEFT, 275, 60, 0);
+    // Path Edit
+    rcTemp.SetRect(36, 324, 40, 0);
     m_pPath = m_pControlManager->CreateEdit(strInstDir, ManagerLayout::Top | ManagerLayout::HFill, rcTemp);
     m_pPath->SetRect(rcTemp);
-    m_pPath->SetBackColor(RGB(53, 52, 70));
+    m_pPath->SetBackColor(RGB(255, 255, 255));
     m_pPath->SetReadOnly(TRUE);
     AddControl(m_pPath);
     CSetupData::GetInst().SetSetupDir(strInstDir);
 
-    // Browse
-    rcTemp.SetRect(0, 275, 0, 0);
-    OButton* pBtnBrowse = m_pControlManager->CreateButton(_T("pushbutton"), IDC_BTN_BROWSE, ManagerLayout::Right | ManagerLayout::Top, 4, rcTemp);
-    pBtnBrowse->SetTextAttr(_T("BTN_BROWSE"), FALSE);
-    rcTemp = pBtnBrowse->GetRect();
-    rcTemp.left = rcTemp.right - 30;
-    rcTemp.bottom = rcTemp.top + Util::GetTextHeight(m_pControlManager->GetWindow(), OGdiObjManager::GetInst().GetFont(14, false));
-    rcTemp.OffsetRect(-20, 0);
-    pBtnBrowse->SetRect(rcTemp);
-    AddControl(pBtnBrowse);
-
     // Agree
-    rcTemp.SetRect(CONTROL_LEFT, 350, 0, 0);
+    rcTemp.SetRect(8, 347, 0, 0);
     m_pChkAgree = m_pControlManager->CreateCheckBox(_T("checkbox"), IDC_BTN_AGREE, ManagerLayout::Left | ManagerLayout::Top, rcTemp);
     m_pChkAgree->SetTextAttr(_T("BTN_AGREE"), TRUE);
     AddControl(m_pChkAgree);
 
     // License
-    rcTemp.SetRect(CONTROL_LEFT + m_pChkAgree->GetRect().Width() + 2, 350 + 4, 0, 0);
+    rcTemp.SetRect(8 + m_pChkAgree->GetRect().Width() + 2, 347 + 4, 0, 0);
     OLink* pLinkAgree = m_pControlManager->CreateLink(IDC_LINK_LICENSE, _T("LINK_LICENSE"), ManagerLayout::Left | ManagerLayout::Top, rcTemp);
     AddControl(pLinkAgree);
-
-    // Next
-    rcTemp.SetRect(0, 0, 35, 20);
-    OButton* pBtn = m_pControlManager->CreateButton(_T("pushbutton"), IDC_BTN_NEXT_PAGE, ManagerLayout::Right | ManagerLayout::Bottom, 4, rcTemp);
-    pBtn->SetTextAttr(_T("BTN_NEXT"), FALSE);
-    AddControl(pBtn);
 }
 
 BOOL CCustomPage::OnCommand(WORD command)

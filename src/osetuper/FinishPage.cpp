@@ -32,7 +32,7 @@ void CFinishPage::Create()
     AddControl(m_pChkStart);
 
     // Finish
-    rcTemp.SetRect(0, 0, 35, 20);
+    rcTemp.SetRect(0, 0, 45, 40);
     OButton* pBtn = m_pControlManager->CreateButton(_T("pushbutton"), IDC_BTN_FINISH, ManagerLayout::Right | ManagerLayout::Bottom, 4, rcTemp);
     pBtn->SetTextAttr(_T("BTN_FINISH"), FALSE);
     AddControl(pBtn);

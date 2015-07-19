@@ -155,7 +155,7 @@ void OControlManager::Draw(HDC hDc, const CRect& rcClip)
     HBITMAP hMemBitmap = ::CreateCompatibleBitmap(hDc, rcClient.Width(), rcClient.Height());
     HGDIOBJ hOldBmp = ::SelectObject(hMemDc, hMemBitmap);
     ::SetBkMode(hMemDc, TRANSPARENT);
-    ::SetTextColor(hMemDc, RGB(255, 255, 255));
+    ::SetTextColor(hMemDc, RGB(0, 0, 0));
 
     HRGN hClipRgn = (HRGN)::GetCurrentObject(hDc, OBJ_REGION);
     HFONT hFont = (HFONT)::SendMessage(m_hWnd, WM_GETFONT, 0, 0);

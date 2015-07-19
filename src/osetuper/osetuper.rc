@@ -112,6 +112,8 @@ SYSMINBUTTON            PNG                     "resource\\sysminbutton.png"
 CHECKBOX                PNG                     "resource\\checkbox.png"
 PUSHBUTTON              PNG                     "resource\\pushbutton.png"
 LOGO                    PNG                     "resource\\logo.png"
+FOLDER                  PNG                     "resource\\folder.png"
+BTNINSTALL              PNG                     "resource\\btnInstall.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -69,6 +69,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
     CrashDaemon::StartCrashClient(NULL, WeAreCrashed);
 
+    CStringBundle::GetInst().Init();
     ULONG_PTR uToken = Util::InitGdiplus();
 
     _Module.Init(NULL, hInstance);

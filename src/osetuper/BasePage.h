@@ -5,7 +5,7 @@
 #include "resource.h"
 
 
-#define CONTROL_LEFT 35
+#define CONTROL_LEFT 106
 
 class CBasePage
 {
